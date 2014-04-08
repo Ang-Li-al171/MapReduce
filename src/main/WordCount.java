@@ -2,7 +2,6 @@ package main;
 
 import network.NetworkMaster;
 import network.WordCountNetworkMaster;
-
 import map.*;
 import reduce.*;
 import output.*;

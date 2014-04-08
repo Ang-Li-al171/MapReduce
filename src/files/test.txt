@@ -1,0 +1,2 @@
+This is a sample text file. We will run the word count program on this file.
+There is not a large amount of data on this file, but it will do.
