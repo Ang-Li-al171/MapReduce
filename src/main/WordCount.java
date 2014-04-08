@@ -1,5 +1,8 @@
-import java.io.IOException;
-import java.util.*;
+package main;
+
+import network.NetworkMaster;
+import network.WordCountNetworkMaster;
+
 import map.*;
 import reduce.*;
 import output.*;
@@ -11,31 +14,32 @@ This is where the programmer creates the specifics for a job and runs it.
 
 public class WordCount {
 
-	public static class Map<K1,V1,K2,V2> implements Mapper<K1,V1,K2,V2> {
-		public void map(int key, String value, OutputCollector output) throws IOException {
+	private WordCountMapper myMapper;
+	private WordCountReducer<String, Integer> myReducer;
+	private OutputCollector<String, Integer> myOutput;
+	private NetworkMaster myNetwork;
 
+	public void run() { //Specify the job configurations, mapper, reducer, etc
+		
+		long startTime = System.currentTimeMillis();
+		
+		System.out.println("Initiating MR job");
+		myOutput = new OutputCollector<String, Integer>();
+		myNetwork = new WordCountNetworkMaster(myOutput);
+		myMapper = new WordCountMapper(myNetwork);
+		myReducer = new WordCountReducer<String, Integer>(myNetwork);
+		
+		System.out.println("Running mapping job");
+		myMapper.map(myNetwork.getIPs(), myNetwork.getPorts());
+		
+		System.out.println("Running reducing job");
+		while(myNetwork.blockUntilNextAnswer()){
+			myReducer.reduceCurrent(myOutput);
 		}
-	}
-
-	// public static class Combine implements Combiner<K2,V2,K3,V3> { //This is less important, we can do it later
-	// 	public void combine(int key, Iterator<String> values) throws IOException {
-
-	// 	}
-	// }
-
-	public static class Reduce<K2,V2,K3,V3> implements Reducer<K2,V2,K3,V3> {
-		public void reduce(int key, Iterator<String> values, OutputCollector output) throws IOException {
-			//Shuffle
-
-			//Sort
-
-			//Reduce
-
-		}
-	}
-
-	public static void main(String[] args) throws Exception { //Specify the job configurations, mapper, reducer, etc
-		System.out.println("Running MR job");
+		
+		long endTime = System.currentTimeMillis();
+		
+		System.out.printf("Job done! Take taken: %d milliseconds", endTime-startTime);
 	}
 
 }
