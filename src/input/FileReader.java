@@ -16,8 +16,8 @@ public class FileReader {
     private static Splitter splitter;
     private static final String root = "src/files/";
     
-    public FileReader(List<String> ips) {
-        splitter = new Splitter(ips);
+    public FileReader(Splitter s) {
+        splitter = s;
     }
     
     public void read(String file) throws FileNotFoundException {    

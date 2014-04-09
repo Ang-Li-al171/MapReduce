@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import network.Node;
 
 
 public class TCPClient {
@@ -21,6 +22,12 @@ public class TCPClient {
     public TCPClient (String hostIp, int portNum, int timeOut) {
         HOSTIP = hostIp;
         PORT = portNum;
+        TIMEOUT = timeOut;
+    }
+    
+    public TCPClient (Node n, int timeOut) {
+        HOSTIP = n.getIp();
+        PORT = n.getPort();
         TIMEOUT = timeOut;
     }
 
