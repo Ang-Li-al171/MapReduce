@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.List;
 import network.NetworkCodes;
 import network.NetworkMaster;
+import network.WordCountNetworkMaster;
+import keyvaluepair.KeyValuePair;
 
 
 public class TCPServer {
@@ -39,7 +41,8 @@ public class TCPServer {
                 myClientSocket.close();
                 
             } catch (Exception e){
-                System.out.println(e.getMessage());
+//                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
         
@@ -54,14 +57,14 @@ public class TCPServer {
     private Object receivedObj = null;
     private String receivedFile = null;
     
-    private NetworkMaster myNetwork;
+    private WordCountNetworkMaster myNetwork;
     
     public TCPServer(int port){
         PORT = port;
     }
 
     public void registerNetwork(NetworkMaster n){
-        myNetwork = n;
+        myNetwork = (WordCountNetworkMaster) n;
     }
     
     @SuppressWarnings("resource")
@@ -79,11 +82,12 @@ public class TCPServer {
             }
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+//            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void dealWithObjectReceived (String inType, Object inObj) {
         if (inType.equals("textfile")) {
             writeReceivedFile(inObj);
@@ -101,17 +105,30 @@ public class TCPServer {
 //            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
 
             // do whatever you want to do with the objects here
-            
             // register the node into myNetwork if the action code matches
             if (inType.equals("java.lang.String")){
                 String s = (String) receivedObj;
+                
                 if (s.startsWith(Integer.toString(NetworkCodes.JOIN))){ // what if a word starts with this??
                     String[] splits = s.split(" ");
                     myNetwork.register(splits[1], splits[2]);
-                    System.out.printf("Registered peer ip: %s, port: %s, into the network!\n", splits[1], splits[2]);
-                } else {
-                    System.out.println("Received word count word: " + s);
+                } 
+                
+                else if(s.startsWith(Integer.toString(NetworkCodes.UPDATENODES))) {
+                    String[] splits = s.split(" ");
+                    myNetwork.updateNodeList(splits[1]);
+                } 
+                
+                else {
+                    System.out.println("Received mapped word: " + s);
+                    int n = Math.abs(s.trim().hashCode() % myNetwork.getNodeListSize());
+                    myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(s, 1));
                 }
+            }
+            
+            else if (inType.equals("keyvaluepair.KeyValuePair")){
+                KeyValuePair kvp = (KeyValuePair) inObj;
+                myNetwork.collectKVP(kvp);
             }
         }
     }

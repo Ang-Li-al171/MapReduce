@@ -1,12 +1,6 @@
 package main;
 
-import input.FileReader;
-import input.Splitter;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import network.NetworkMaster;
-import network.Node;
 import network.WordCountNetworkMaster;
 import map.*;
 import reduce.*;

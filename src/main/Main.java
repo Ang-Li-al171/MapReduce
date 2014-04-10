@@ -1,10 +1,5 @@
 package main;
-
-import java.io.FileNotFoundException;
 import java.util.*;
-import input.FileReader;
-import network.*;
-import input.*;
 
 
 public class Main
@@ -16,9 +11,9 @@ public class Main
         Scanner in = new Scanner(System.in);
 
         System.out.println("Please enter command host or join: ");
-        String action = in.next();
-        
+
         while(true){
+            String action = in.next();
             if (action.equals("host")) {
                 String port = in.next();
                 myMain.hostNetwork(port);

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class FileReader {
     
-    private static final Pattern PUNCTUATION = Pattern.compile("[(){},.;!?<>%]");
+    private static final Pattern PUNCTUATION = Pattern.compile("[(){},.;!?<>%]\"");
     private static Splitter splitter;
     private static final String root = "src/files/";
     

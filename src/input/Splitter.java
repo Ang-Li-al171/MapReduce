@@ -20,7 +20,7 @@ public class Splitter {
     }
     
     protected void assignToNode(String word) {
-        myNetwork.sendToNode(counter, word);
+        myNetwork.sendWordToNode(counter, word);
         System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
         incrementCounter();     
     }

@@ -2,7 +2,6 @@ package network.client;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -20,6 +19,7 @@ public class TCPClient implements Runnable{
     private Socket s;
     private List<Object> objToSend;
     private List<String> objType;
+    private boolean end;
 
     public TCPClient (String hostIp, int portNum, int timeOut) {
         HOSTIP = hostIp;
@@ -27,6 +27,7 @@ public class TCPClient implements Runnable{
         TIMEOUT = timeOut;
         objToSend = new LinkedList<Object>();
         objType = new LinkedList<String>();
+        end = false;
     }
 
     public void sendObjectToServer(String outType, Object outObj){
@@ -39,7 +40,7 @@ public class TCPClient implements Runnable{
         }
     }
     
-    public synchronized void sendObjectToServerThread (String outType, Object outObj) {
+    public synchronized void sendObjToServerNonBlock (String outType, Object outObj) {
         
         objType.add(outType);
         objToSend.add(outObj);
@@ -83,9 +84,14 @@ public class TCPClient implements Runnable{
         s.close();
     }
 
+    public synchronized void quitClientThread(){
+        end = true;
+        notifyAll();
+    }
+    
     @Override
     public synchronized void run () {
-        while(true){
+        while(!end){
             while(objToSend.size() > 0){
                 try {
                     createSocketAndSend(objType.get(0), objToSend.get(0));
