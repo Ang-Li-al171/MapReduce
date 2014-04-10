@@ -8,15 +8,17 @@ import output.OutputCollector;
 
 public class WordCountNetworkMaster implements NetworkMaster {
 
-    List<Node> myNodes;
-    OutputCollector<String, Integer> myOutput;
-    AcceptConnection myServer;
+    private List<Node> myNodes;
+    private OutputCollector<String, Integer> myOutput;
+    private AcceptConnection myServer;
+    private List<TCPClient> myClients;
+    private boolean unStarted;
 
     public WordCountNetworkMaster (OutputCollector<String, Integer> o) {
         myOutput = o;
-
         myNodes = new LinkedList<Node>();
-
+        myClients = new LinkedList<TCPClient>();
+        unStarted = true;
     }
 
     public void startListening (int port) {
@@ -59,13 +61,25 @@ public class WordCountNetworkMaster implements NetworkMaster {
 
     @Override
     public void sendToNode (int index, String word) {
-        Node n = myNodes.get(index);
+        if (unStarted) {
+            unStarted = false;
+            initThreads();
+        }
         
-        TCPClient client = new TCPClient(n.getIp(), n.getPort(), NetworkCodes.TIMEOUT);
-
         String outType = "java.lang.String";
 
-        client.sendObjectToServer(outType, word);
+        myClients.get(index).sendObjectToServerThread(outType, word);
 
+    }
+    
+    private void initThreads(){
+        
+        for (int i=0;i<myNodes.size();i++){
+            Node n = myNodes.get(i);
+            TCPClient client = new TCPClient(n.getIp(), n.getPort(), NetworkCodes.TIMEOUT);
+            new Thread(client).start();
+            myClients.add(client);
+        }
+        
     }
 }

@@ -7,32 +7,29 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import network.Node;
 
 
-public class TCPClient {
+public class TCPClient implements Runnable{
 
     private final String HOSTIP;
     private final int PORT;
     private final int TIMEOUT;
     private Socket s;
+    private List<Object> objToSend;
+    private List<String> objType;
 
     public TCPClient (String hostIp, int portNum, int timeOut) {
         HOSTIP = hostIp;
         PORT = portNum;
         TIMEOUT = timeOut;
-    }
-    
-    public TCPClient (Node n, int timeOut) {
-        HOSTIP = n.getIp();
-        PORT = n.getPort();
-        TIMEOUT = timeOut;
+        objToSend = new LinkedList<Object>();
+        objType = new LinkedList<String>();
     }
 
-    public void sendObjectToServer (String outType, Object outObj) {
-        
+    public void sendObjectToServer(String outType, Object outObj){
         try {
             createSocketAndSend(outType, outObj);
         }
@@ -40,7 +37,13 @@ public class TCPClient {
             System.out.println("Something went wrong trying to send the object...");
             e.printStackTrace();
         }
+    }
+    
+    public synchronized void sendObjectToServerThread (String outType, Object outObj) {
         
+        objType.add(outType);
+        objToSend.add(outObj);
+        notifyAll();
     }
     
     public void sendFileToServer (String filePath) {
@@ -73,10 +76,34 @@ public class TCPClient {
         out.writeObject(outObj);
         out.flush();
 
-        ObjectInputStream in = new ObjectInputStream(s.getInputStream());
-        String message = (String) in.readObject();
-        System.out.println(message);
+//        ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+//        String message = (String) in.readObject();
+//        System.out.println(message);
 
         s.close();
+    }
+
+    @Override
+    public synchronized void run () {
+        while(true){
+            while(objToSend.size() > 0){
+                try {
+                    createSocketAndSend(objType.get(0), objToSend.get(0));
+                    objToSend.remove(0);
+                    objType.remove(0);
+                }
+                catch (Exception e) {
+                    System.out.println("Something went wrong trying to send the object...");
+                    e.printStackTrace();
+                }
+            }
+            
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ public class Splitter {
     
     protected void assignToNode(String word) {
         myNetwork.sendToNode(counter, word);
-        System.out.printf("Sending word: %s to machine: %d in the node list", word, counter);
+        System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
         incrementCounter();     
     }
     

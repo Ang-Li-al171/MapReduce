@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -30,11 +29,12 @@ public class TCPServer {
                 String inType = (String) in.readObject();
                 Object inObj = in.readObject();
                 dealWithObjectReceived(inType, inObj);
-    
-                ObjectOutputStream out = new ObjectOutputStream(myClientSocket.getOutputStream());
-                out.writeObject("Hi Client, this is server. Your information has been received");
-                out.flush();
-                out.close();
+                in.close();
+                
+//                ObjectOutputStream out = new ObjectOutputStream(myClientSocket.getOutputStream());
+//                out.writeObject("Hi Client, this is server. Your information has been received");
+//                out.flush();
+//                out.close();
 
                 myClientSocket.close();
                 
