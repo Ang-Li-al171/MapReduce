@@ -8,11 +8,44 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import network.NetworkCodes;
+import network.NetworkMaster;
 
 
 public class TCPServer {
 
-    private static final int PORT = 4768;
+    private class DealWithConnection implements Runnable{
+
+        Socket myClientSocket;
+        
+        public DealWithConnection(Socket clientSocket){
+            myClientSocket = clientSocket;
+        }
+        
+        @Override
+        public void run () {
+            
+            try{
+                ObjectInputStream in = new ObjectInputStream(myClientSocket.getInputStream());
+                String inType = (String) in.readObject();
+                Object inObj = in.readObject();
+                dealWithObjectReceived(inType, inObj);
+    
+                ObjectOutputStream out = new ObjectOutputStream(myClientSocket.getOutputStream());
+                out.writeObject("Hi Client, this is server. Your information has been received");
+                out.flush();
+                out.close();
+
+                myClientSocket.close();
+                
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+        
+    }
+    
+    private static int PORT;
     private static final String DEFAULT_RECEIVED_FILE = System.getProperty("user.dir") +
                                                         File.separator
                                                         + "src" + File.separator + "network" +
@@ -20,7 +53,17 @@ public class TCPServer {
                                                         "ReceivedFile.txt";
     private Object receivedObj = null;
     private String receivedFile = null;
+    
+    private NetworkMaster myNetwork;
+    
+    public TCPServer(int port){
+        PORT = port;
+    }
 
+    public void registerNetwork(NetworkMaster n){
+        myNetwork = n;
+    }
+    
     @SuppressWarnings("resource")
     public void runServer () {
         try {
@@ -31,17 +74,8 @@ public class TCPServer {
 
                 Socket clientSocket = serverS.accept();
 
-                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-                String inType = (String) in.readObject();
-                Object inObj = in.readObject();
-                dealWithObjectReceived(inType, inObj);
-
-                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                out.writeObject("Hi Client, this is server. Your information has been received");
-                out.flush();
-                out.close();
-
-                clientSocket.close();
+                new Thread(new DealWithConnection(clientSocket)).start();
+                
             }
         }
         catch (Exception e) {
@@ -64,9 +98,19 @@ public class TCPServer {
                 return;
             }
             receivedObj = c.cast(inObj);
-            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
+//            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
 
             // do whatever you want to do with the objects here
+            
+            // register the node into myNetwork if the action code matches
+            if (inType.equals("java.lang.String")){
+                String s = (String) receivedObj;
+                if (s.startsWith(Integer.toString(NetworkCodes.JOIN))){
+                    String[] splits = s.split(" ");
+                    myNetwork.register(splits[1], splits[2]);
+                    System.out.printf("Registered peer ip: %s, port: %s, into the network!\n", splits[1], splits[2]);
+                }
+            }
         }
     }
 

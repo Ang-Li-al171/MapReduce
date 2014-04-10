@@ -10,7 +10,30 @@ public class Main
 {
   public static void main(String[] args)
   {
-      new WordCount().run();
+      WordCount myMain = new WordCount();
+      
+      Scanner in = new Scanner(System.in);
+      
+      System.out.println("Please enter command host or join: ");
+      String action = in.next();
+      
+      if (action.equals("host")){
+          String port = in.next();
+          myMain.hostNetwork(port);
+          System.out.printf("Hosting a network at port %d!\n", Integer.parseInt(port));
+      } else if (action.startsWith("join")){
+          myMain.joinHost(in.next(), in.next(), in.next(), in.next());
+          System.out.println("Request sent to join a network!");
+      }
+      else {
+          System.out.println("Unrecognized action... Error!");
+      }
+      
+      System.out.println("Please enter the next command: ");
+      String a = in.next();
+      
+      in.close();
+      
       String file = args[0];
       System.out.println(file);
       List<Node> nodeList = new ArrayList<>();

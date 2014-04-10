@@ -7,7 +7,7 @@ public class ServerExample {
         private TCPServer exampleServer;
 
         public serverThread () {
-            exampleServer = new TCPServer();
+            exampleServer = new TCPServer(4768);
         }
 
         @Override

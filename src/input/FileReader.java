@@ -1,7 +1,6 @@
 package input;
 
 import java.io.*;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 

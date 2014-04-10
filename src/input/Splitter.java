@@ -16,7 +16,7 @@ public class Splitter {
     private static int counter;
     private static int STANDARD_TIMEOUT = 1000;
     
-    public Splitter(List<Node> n) {
+    public Splitter(List<Node> n ) {
         nodes = n;
         numNodes = n.size();
         counter = 0;

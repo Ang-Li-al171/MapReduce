@@ -2,6 +2,7 @@ package map;
 
 import java.util.List;
 import network.NetworkMaster;
+import network.Node;
 
 
 public class WordCountMapper implements Mapper {
@@ -13,7 +14,8 @@ public class WordCountMapper implements Mapper {
 	}
 	
 	@Override
-	public void map(List<String> ips, List<Integer> ports) {
+	public void map(List<Node> nodes) {
 		// split the task and send out to peers
 	}
+
 }
