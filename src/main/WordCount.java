@@ -1,6 +1,12 @@
 package main;
 
+import input.FileReader;
+import input.Splitter;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import network.NetworkMaster;
+import network.Node;
 import network.WordCountNetworkMaster;
 import map.*;
 import reduce.*;
@@ -23,7 +29,7 @@ public class WordCount {
         myNetwork = new WordCountNetworkMaster(myOutput);
     }
     
-    public void run() { //Specify the job configurations, mapper, reducer, etc
+    public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc
 
         long startTime = System.currentTimeMillis();
 
@@ -32,7 +38,7 @@ public class WordCount {
         myReducer = new WordCountReducer<String, Integer>(myNetwork);
         
         System.out.println("Running mapping job");
-        myMapper.map(myNetwork.getNodes());
+        myMapper.map(file);
 
         System.out.println("Running reducing job");
         while(myNetwork.blockUntilNextAnswer()){

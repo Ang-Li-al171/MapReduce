@@ -1,8 +1,6 @@
 package input;
 
-import java.util.*;
 import network.*;
-import network.client.*;
 
 /**
  * Divides the input among the nodes in the cluster. There are many types of splitter algorithms
@@ -11,25 +9,19 @@ import network.client.*;
  *
  */
 public class Splitter {
-    private static List<Node> nodes;
     private static int numNodes;
     private static int counter;
-    private static int STANDARD_TIMEOUT = 1000;
+    private NetworkMaster myNetwork;
     
-    public Splitter(List<Node> n ) {
-        nodes = n;
-        numNodes = n.size();
+    public Splitter(int nodeCount, NetworkMaster network) {
+        myNetwork = network;
+        numNodes = nodeCount;
         counter = 0;
     }
     
     protected void assignToNode(String word) {
-        Node current = nodes.get(counter);
-        String ip = current.getIp();
-        String port = Integer.toString(current.getPort());
-        System.out.println("Sending word: '" + word + "' to machine: " + ip + " at port: " + port);
-        //Networking call to send to the ip
-        TCPClient network = new TCPClient(current,STANDARD_TIMEOUT);
-        network.sendObjectToServer("String", word);
+        myNetwork.sendToNode(counter, word);
+        System.out.printf("Sending word: %s to machine: %d in the node list", word, counter);
         incrementCounter();     
     }
     

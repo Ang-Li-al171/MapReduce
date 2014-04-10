@@ -105,10 +105,12 @@ public class TCPServer {
             // register the node into myNetwork if the action code matches
             if (inType.equals("java.lang.String")){
                 String s = (String) receivedObj;
-                if (s.startsWith(Integer.toString(NetworkCodes.JOIN))){
+                if (s.startsWith(Integer.toString(NetworkCodes.JOIN))){ // what if a word starts with this??
                     String[] splits = s.split(" ");
                     myNetwork.register(splits[1], splits[2]);
                     System.out.printf("Registered peer ip: %s, port: %s, into the network!\n", splits[1], splits[2]);
+                } else {
+                    System.out.println("Received word count word: " + s);
                 }
             }
         }
