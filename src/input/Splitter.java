@@ -1,6 +1,7 @@
 package input;
 
-import network.*;
+import network.NetworkMaster;
+
 
 /**
  * Divides the input among the nodes in the cluster. There are many types of splitter algorithms
@@ -12,16 +13,23 @@ public class Splitter {
     private static int numNodes;
     private static int counter;
     private NetworkMaster myNetwork;
+    private static StringBuilder sb;
     
-    public Splitter(int nodeCount, NetworkMaster mapNetwork) {
-        myNetwork = mapNetwork;
+    public Splitter(int nodeCount, NetworkMaster network) {
+        myNetwork = network;
         numNodes = nodeCount;
         counter = 0;
     }
     
-    protected void assignToNode(String word) {
-        myNetwork.sendWordToNode(counter, word);
-        System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
+    protected void assignToNode(String line) {
+        //Protocol: <Map/Reduce Indicator> <Map/Reduce Function> <msg>
+    	sb = new StringBuilder();
+    	sb.append("Map ");
+    	sb.append("WordCount ");
+    	sb.append(line);
+    	String msg = sb.toString();
+        System.out.printf("Sending line: %s to machine: %d in the node list\n", msg, counter);
+        myNetwork.sendMsgToNode(counter, msg);
         incrementCounter();     
     }
     

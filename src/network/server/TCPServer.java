@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+
+import map.MapExecutor;
 import network.NetworkCodes;
 import network.NetworkMaster;
 import keyvaluepair.KeyValuePair;
@@ -53,6 +55,7 @@ public class TCPServer {
                                                         + "src" + File.separator + "network" +
                                                         File.separator + "server" + File.separator +
                                                         "ReceivedFile.txt";
+    private static MapExecutor myMapExecutor;
     private Object receivedObj = null;
     private String receivedFile = null;
     
@@ -60,10 +63,12 @@ public class TCPServer {
     
     public TCPServer(int port){
         PORT = port;
+        myMapExecutor = new MapExecutor();
     }
 
     public void registerNetwork(NetworkMaster networkMaster){
         myNetwork = networkMaster;
+        myMapExecutor.registerNetwork(networkMaster);
     }
     
     @SuppressWarnings("resource")
@@ -119,10 +124,8 @@ public class TCPServer {
                 } 
                 
                 else {
-                    System.out.println("Received mapped word: " + s);
-                    //TODO: possible processing in network master
-                    int n = Math.abs(s.trim().hashCode() % myNetwork.getNodeListSize());
-                    myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(s, 1));
+                    System.out.println("Received msg: " + s);
+                    myMapExecutor.parseAndMap(s);
                 }
             }
             

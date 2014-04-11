@@ -64,7 +64,7 @@ public class NetworkMaster {
             sb.deleteCharAt(sb.length() - 1);
 
             for (int i = 0; i < myNodes.size(); i++) {
-                sendWordToNode(i, sb.toString());
+                sendMsgToNode(i, sb.toString());
             }
         }
     }
@@ -95,7 +95,7 @@ public class NetworkMaster {
         return myNodes.size();
     }
 
-    public void sendWordToNode (int index, String word) {
+    public void sendMsgToNode (int index, String word) {
 
         String outType = "java.lang.String";
 

@@ -17,14 +17,7 @@ public class WordCountMapper implements Mapper {
     @Override
     public void map (String file) {
 
-        Splitter s = new Splitter(mapNetwork.getNodeListSize(), mapNetwork); // Programmer can customize the splitter they use
-        FileReader fr = new FileReader(s); // Programmer can also customize the reader they use
-        try {
-            fr.read(file);
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        
     }
 
 }
