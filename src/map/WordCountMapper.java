@@ -1,19 +1,33 @@
 package map;
 
-import java.util.List;
+import input.FileReader;
+import input.Splitter;
+import java.io.FileNotFoundException;
+
+import keyvaluepair.KeyValuePair;
+
 import network.NetworkMaster;
 
-
 public class WordCountMapper implements Mapper {
-	
-	private NetworkMaster mapNetwork;
-	
-	public WordCountMapper(NetworkMaster n){
-		mapNetwork = n;
-	}
-	
-	@Override
-	public void map(List<String> ips, List<Integer> ports) {
-		// split the task and send out to peers
-	}
+
+    private NetworkMaster myNetwork;
+
+    public WordCountMapper (NetworkMaster network) {
+        myNetwork = network;
+    }
+
+    @Override
+    public void map (String s) {
+    	String[] wordList = s.split(" ");
+    	for (String word: wordList) {
+    		int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
+            myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(word, 1));
+            
+    	}
+        StringBuilder sb = new StringBuilder();
+        sb.append("4000 ");
+        sb.append(myNetwork.getPort());
+    	myNetwork.sendMsgToAll(sb.toString());
+    }
+
 }

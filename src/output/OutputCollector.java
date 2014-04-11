@@ -19,5 +19,9 @@ public class OutputCollector<K, V> {
 		KeyValuePair<K, V> t = new KeyValuePair<K, V>(key, value);
 		tuples.add(t);
 	}
+	
+	public synchronized void collect(KeyValuePair<K, V> kvp){
+	    tuples.add(kvp);
+	}
 
 }

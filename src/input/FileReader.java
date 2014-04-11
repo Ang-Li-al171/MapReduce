@@ -1,7 +1,6 @@
 package input;
 
 import java.io.*;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -12,8 +11,9 @@ import java.util.regex.Pattern;
  */
 public class FileReader {
     
-    private static final Pattern PUNCTUATION = Pattern.compile("[(){},.;!?<>%]");
+    private static final Pattern PUNCTUATION = Pattern.compile("[(){},.;!?<>%]\"");
     private static Splitter splitter;
+    private static Scanner s;
     private static final String root = "src/files/";
     
     public FileReader(Splitter s) {
@@ -22,14 +22,13 @@ public class FileReader {
     
     public void read(String file) throws FileNotFoundException {    
         file = root+file;
-        Scanner s = null;
         File fileName = new File(file);
         try {
             s = new Scanner(fileName);
             while (s.hasNext()) {
-                String rawWord = s.next();
-                String filteredWord = removePunctiation(rawWord);
-                splitter.assignToNode(filteredWord);
+                String line = s.nextLine();
+                //String filteredWord = removePunctiation(rawWord);
+                splitter.assignToNode(line);
             }
         } finally {
             if (s != null) {
