@@ -23,12 +23,19 @@ public class WordCountMapper implements Mapper {
     @Override
     public void map (String s) {
     	String[] wordList = s.split(" ");
-    	for (String word: wordList) {
+    	for (String rawWord: wordList) {
+    		String word = processWord(rawWord);
     		int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
             myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(word, 1));
             
     	}
     	System.out.println("Finished a map");
+    }
+    
+    private String processWord(String rawWord) {
+    	String s = rawWord.replaceAll("[()?:\"!.,;]+", "");
+
+    	return s.toLowerCase();
     }
     
     @Override

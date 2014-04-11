@@ -72,7 +72,7 @@ public class WordCountReducer implements Reducer<String, Integer> {
 				}
 			}
 			reduce();
-			System.out.println("REDUCE END ");
+			System.out.println("REDUCE END");
 		}
 		
 	}
