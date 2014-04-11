@@ -9,6 +9,9 @@ public class NetworkCodes {
     public static final int UPDATENODES = 2003;
     public static final int WORD = 2004;
     
-    //Network Codes for Job Notification
+    //Network Codes for Job Identifier
     public static final int WORDCOUNT = 3000;
+    
+    //Network Codes for EOF
+    public static final int MAPEOF = 4000;
 }

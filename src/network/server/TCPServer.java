@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
+import reduce.Reducer;
+import reduce.WordCountReducer;
+
 import map.Mapper;
 import map.WordCountMapper;
 import network.NetworkCodes;
@@ -57,6 +60,7 @@ public class TCPServer {
                                                         File.separator + "server" + File.separator +
                                                         "ReceivedFile.txt";
     private static Mapper myCurrentMapper;
+    private static Reducer myCurrentReducer;
     private Object receivedObj = null;
     private String receivedFile = null;
     
@@ -124,6 +128,13 @@ public class TCPServer {
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.WORDCOUNT))) {
                 	myCurrentMapper = new WordCountMapper(myNetwork);
+                	myCurrentReducer = new WordCountReducer(myNetwork);
+                }
+                
+                else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
+                	System.out.println("MAPEOF received!");
+                	String[] splits = s.split(" ");
+                	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]));
                 }
                 else {
                     System.out.println("Received msg: " + s);
@@ -132,8 +143,15 @@ public class TCPServer {
             }
             
             else if (inType.equals("keyvaluepair.KeyValuePair")){
-                KeyValuePair kvp = (KeyValuePair) inObj;
-                myNetwork.collectKVP(kvp);
+            	KeyValuePair kvp = (KeyValuePair) inObj;
+                if (myNetwork.getIsHost()) {	//receiving end result
+                	System.out.println("RESULT: " + kvp.getKey().toString() + " " + (Integer)kvp.getValue());
+                } else {	//receiving reduce work
+                    System.out.println("Reduced word " + kvp.getKey().toString() + " received");
+                	myCurrentReducer.addKVP(kvp);
+                    
+                    //myNetwork.collectKVP(kvp);
+                }
             }
         }
     }

@@ -22,8 +22,12 @@ public class WordCountMapper implements Mapper {
     	for (String word: wordList) {
     		int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
             myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(word, 1));
+            
     	}
-        
+        StringBuilder sb = new StringBuilder();
+        sb.append("4000 ");
+        sb.append(myNetwork.getPort());
+    	myNetwork.sendMsgToAll(sb.toString());
     }
 
 }
