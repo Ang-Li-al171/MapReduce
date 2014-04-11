@@ -40,7 +40,10 @@ public class EndSystem {
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        
+        myNetwork.sendMsgToAll("4001");
+        
+        //TODO: THIS IS A FALSE TIME COUNT!!
         long endTime = System.currentTimeMillis();
 
         System.out.printf("Job done! Take taken: %d milliseconds", endTime-startTime);

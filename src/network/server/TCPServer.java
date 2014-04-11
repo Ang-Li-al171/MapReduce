@@ -131,14 +131,20 @@ public class TCPServer {
                 	myCurrentReducer = new WordCountReducer(myNetwork);
                 }
                 
-                else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
-                	System.out.println("MAPEOF received!");
+                else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
+              
                 	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]));
+                }
+                
+                else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
+                	myCurrentMapper.receiveEOF();
                 }
                 else {
                     System.out.println("Received msg: " + s);
+                    myCurrentMapper.incrementCounter();
                     myCurrentMapper.map(s);
+                    myCurrentMapper.decrementCounter();
                 }
             }
             
@@ -147,8 +153,11 @@ public class TCPServer {
                 if (myNetwork.getIsHost()) {	//receiving end result
                 	System.out.println("RESULT: " + kvp.getKey().toString() + " " + (Integer)kvp.getValue());
                 } else {	//receiving reduce work
+                    
+                    myCurrentReducer.incrementCounter();
+                    myCurrentReducer.addKVP(kvp);
+                    myCurrentReducer.decrementCounter();
                     System.out.println("Reduced word " + kvp.getKey().toString() + " received");
-                	myCurrentReducer.addKVP(kvp);
                     
                     //myNetwork.collectKVP(kvp);
                 }

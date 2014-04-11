@@ -12,6 +12,7 @@ public class NetworkMaster {
     private List<Node> myNodes;
     private OutputCollector<String, Integer> myOutput;
     private int myPort;
+    private String myIp;
     private String myHostPort;
     private String myHostIp;
     private AcceptConnection myServer;
@@ -26,7 +27,6 @@ public class NetworkMaster {
     }
 
     public void startListening (int port) {
-    	myPort = port;
         isHost = true;
         myServer = new AcceptConnection(port, this);
         new Thread(myServer).start();
@@ -34,7 +34,9 @@ public class NetworkMaster {
 
     public void requestJoin (String ownIP, String ownPort, String ip, String port) {
         myHostIp = ip;
+        myPort = Integer.parseInt(ownPort);
         myHostPort = port;
+        myIp = ownIP;
     	TCPClient client = new TCPClient(ip, Integer.parseInt(port), NetworkCodes.TIMEOUT);
 
         String outType = "java.lang.String";
@@ -110,7 +112,7 @@ public class NetworkMaster {
     
     public void sendMsgToAll(String msg) {
     	for (TCPClient c: myClients) {
-    		c.sendObjectToServer("java.lang.String", msg);
+    		c.sendObjToServerNonBlock("java.lang.String", msg);
     	}
     }
 
@@ -155,5 +157,9 @@ public class NetworkMaster {
     
     public String getHostPort() {
     	return myHostPort;
+    }
+    
+    public String getIP() {
+    	return myIp;
     }
 }

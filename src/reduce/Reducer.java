@@ -10,5 +10,6 @@ public interface Reducer<K, V> {
 	public void reduce();
 	public void addKVP(KeyValuePair kvp);
 	public void receiveEOF(int port);
-	
+    public void incrementCounter();
+    public void decrementCounter();
 }
