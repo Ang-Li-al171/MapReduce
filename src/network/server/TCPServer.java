@@ -8,7 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
-import map.MapExecutor;
+import map.Mapper;
+import map.WordCountMapper;
 import network.NetworkCodes;
 import network.NetworkMaster;
 import keyvaluepair.KeyValuePair;
@@ -55,7 +56,7 @@ public class TCPServer {
                                                         + "src" + File.separator + "network" +
                                                         File.separator + "server" + File.separator +
                                                         "ReceivedFile.txt";
-    private static MapExecutor myMapExecutor;
+    private static Mapper myCurrentMapper;
     private Object receivedObj = null;
     private String receivedFile = null;
     
@@ -63,12 +64,10 @@ public class TCPServer {
     
     public TCPServer(int port){
         PORT = port;
-        myMapExecutor = new MapExecutor();
     }
 
     public void registerNetwork(NetworkMaster networkMaster){
         myNetwork = networkMaster;
-        myMapExecutor.registerNetwork(networkMaster);
     }
     
     @SuppressWarnings("resource")
@@ -123,9 +122,12 @@ public class TCPServer {
                     myNetwork.updateNodeList(splits[1]);
                 } 
                 
+                else if (s.startsWith(Integer.toString(NetworkCodes.WORDCOUNT))) {
+                	myCurrentMapper = new WordCountMapper(myNetwork);
+                }
                 else {
                     System.out.println("Received msg: " + s);
-                    myMapExecutor.parseAndMap(s);
+                    myCurrentMapper.map(s);
                 }
             }
             

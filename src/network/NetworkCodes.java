@@ -8,4 +8,7 @@ public class NetworkCodes {
     public static final int TASK = 2002;
     public static final int UPDATENODES = 2003;
     public static final int WORD = 2004;
+    
+    //Network Codes for Job Notification
+    public static final int WORDCOUNT = 3000;
 }

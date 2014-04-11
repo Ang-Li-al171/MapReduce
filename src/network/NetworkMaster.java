@@ -102,6 +102,12 @@ public class NetworkMaster {
         myClients.get(index).sendObjToServerNonBlock(outType, word);
 
     }
+    
+    public void sendMsgToAll(String msg) {
+    	for (TCPClient c: myClients) {
+    		c.sendObjectToServer("java.lang.String", msg);
+    	}
+    }
 
     public void sendKVPToNode (int index, KeyValuePair<String, Integer> kvp) {
 

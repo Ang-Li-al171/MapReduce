@@ -30,6 +30,8 @@ public class EndSystem {
     public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc
 
         long startTime = System.currentTimeMillis();
+        
+        notifyJobToNetwork("3000");
 
         System.out.println("Initiating MR job");
         myMapper = new WordCountMapper(myNetwork);
@@ -56,7 +58,12 @@ public class EndSystem {
         System.out.printf("Job done! Take taken: %d milliseconds", endTime-startTime);
     }
 
-    public void joinHost(String ownIP, String ownPort, String ip, String port){
+    private void notifyJobToNetwork(String msg) {
+		myNetwork.sendMsgToAll(msg);
+		
+	}
+
+	public void joinHost(String ownIP, String ownPort, String ip, String port){
         myNetwork.requestJoin(ownIP, ownPort, ip, port);
     }
 

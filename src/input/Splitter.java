@@ -13,7 +13,6 @@ public class Splitter {
     private static int numNodes;
     private static int counter;
     private NetworkMaster myNetwork;
-    private static StringBuilder sb;
     
     public Splitter(int nodeCount, NetworkMaster network) {
         myNetwork = network;
@@ -23,13 +22,8 @@ public class Splitter {
     
     protected void assignToNode(String line) {
         //Protocol: <Map/Reduce Indicator> <Map/Reduce Function> <msg>
-    	sb = new StringBuilder();
-    	sb.append("Map ");
-    	sb.append("WordCount ");
-    	sb.append(line);
-    	String msg = sb.toString();
-        System.out.printf("Sending line: %s to machine: %d in the node list\n", msg, counter);
-        myNetwork.sendMsgToNode(counter, msg);
+        System.out.printf("Sending line: %s to machine: %d in the node list\n", line, counter);
+        myNetwork.sendMsgToNode(counter, line);
         incrementCounter();     
     }
     

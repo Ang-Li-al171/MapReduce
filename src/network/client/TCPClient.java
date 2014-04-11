@@ -41,7 +41,6 @@ public class TCPClient implements Runnable{
     }
     
     public synchronized void sendObjToServerNonBlock (String outType, Object outObj) {
-        
         objType.add(outType);
         objToSend.add(outObj);
         notifyAll();
@@ -94,21 +93,24 @@ public class TCPClient implements Runnable{
         while(!end){
             while(objToSend.size() > 0){
                 try {
-                    createSocketAndSend(objType.get(0), objToSend.get(0));
+                	//System.out.println("Current msg to send " + objToSend.get(0).toString() + "size of list " + objToSend.size());
+                	createSocketAndSend(objType.get(0), objToSend.get(0));
                     objToSend.remove(0);
                     objType.remove(0);
+                    //System.out.println("Current size: " + objToSend.size());
                 }
                 catch (Exception e) {
-                    System.out.println("Something went wrong trying to send the object...");
+                    System.out.println("Something went wrong trying to send the object..." + HOSTIP + PORT);
                     e.printStackTrace();
                 }
             }
-            
-            try {
-                wait();
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
+            while (objToSend.size() == 0) {
+                try {
+                    wait();
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
