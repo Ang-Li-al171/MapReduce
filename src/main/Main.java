@@ -6,6 +6,13 @@ import input.FileReader;
 import network.*;
 import input.*;
 
+/**
+ * Import format should be: filename ip1:port1 ip2:port2 ip3:port3
+ * ie. test.txt 127.0.0.1:3000 127.0.0.1:3001 127.0.0.1:3002
+ * 
+ * @author weideng
+ *
+ */
 public class Main
 {
   public static void main(String[] args)
