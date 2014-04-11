@@ -13,8 +13,8 @@ public class Splitter {
     private static int counter;
     private NetworkMaster myNetwork;
     
-    public Splitter(int nodeCount, NetworkMaster network) {
-        myNetwork = network;
+    public Splitter(int nodeCount, NetworkMaster mapNetwork) {
+        myNetwork = mapNetwork;
         numNodes = nodeCount;
         counter = 0;
     }

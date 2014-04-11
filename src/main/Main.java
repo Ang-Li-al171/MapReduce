@@ -6,7 +6,7 @@ public class Main
 {
     public static void main (String[] args)
     {
-        WordCount myMain = new WordCount();
+        EndSystem myEndSystem = new EndSystem();
 
         Scanner in = new Scanner(System.in);
 
@@ -16,12 +16,12 @@ public class Main
             String action = in.next();
             if (action.equals("host")) {
                 String port = in.next();
-                myMain.hostNetwork(port);
+                myEndSystem.hostNetwork(port);
                 System.out.printf("Hosting a network at port %d!\n", Integer.parseInt(port));
                 break;
             }
             else if (action.startsWith("join")) {
-                myMain.joinHost(in.next(), in.next(), in.next(), in.next());
+                myEndSystem.joinHost(in.next(), in.next(), in.next(), in.next());
                 System.out.println("JOIN request sent to network host!");
                 break;
             }
@@ -40,7 +40,7 @@ public class Main
                 String file = in.next();
                 System.out.println("Carrying out word count on file " + file);
                 
-                myMain.runWordCount(file);
+                myEndSystem.runWordCount(file);
                 break;
             }
             

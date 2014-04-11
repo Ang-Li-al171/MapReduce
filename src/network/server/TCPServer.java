@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.List;
 import network.NetworkCodes;
 import network.NetworkMaster;
-import network.WordCountNetworkMaster;
 import keyvaluepair.KeyValuePair;
 
 
@@ -57,14 +56,14 @@ public class TCPServer {
     private Object receivedObj = null;
     private String receivedFile = null;
     
-    private WordCountNetworkMaster myNetwork;
+    private NetworkMaster myNetwork;
     
     public TCPServer(int port){
         PORT = port;
     }
 
-    public void registerNetwork(NetworkMaster n){
-        myNetwork = (WordCountNetworkMaster) n;
+    public void registerNetwork(NetworkMaster networkMaster){
+        myNetwork = networkMaster;
     }
     
     @SuppressWarnings("resource")
@@ -121,6 +120,7 @@ public class TCPServer {
                 
                 else {
                     System.out.println("Received mapped word: " + s);
+                    //TODO: possible processing in network master
                     int n = Math.abs(s.trim().hashCode() % myNetwork.getNodeListSize());
                     myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(s, 1));
                 }

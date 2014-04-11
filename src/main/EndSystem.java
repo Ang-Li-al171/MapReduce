@@ -1,7 +1,6 @@
 package main;
 
 import network.NetworkMaster;
-import network.WordCountNetworkMaster;
 import map.*;
 import reduce.*;
 import output.*;
@@ -11,16 +10,16 @@ The main user program, and the only file the programmer sees.
 This is where the programmer creates the specifics for a job and runs it.
  */
 
-public class WordCount {
+public class EndSystem {
 
-    private WordCountMapper myMapper;
-    private WordCountReducer<String, Integer> myReducer;
+    private Mapper myMapper;
+    private Reducer<String, Integer> myReducer;
     private OutputCollector<String, Integer> myOutput;
     private NetworkMaster myNetwork;
 
-    public WordCount(){
+    public EndSystem(){
         myOutput = new OutputCollector<String, Integer>();
-        myNetwork = new WordCountNetworkMaster(myOutput);
+        myNetwork = new NetworkMaster(myOutput);
     }
     
     public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc

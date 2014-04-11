@@ -7,8 +7,8 @@ public class WordCountReducer<K, V> implements Reducer<K, V> {
 
 	private NetworkMaster reduceNetwork;
 	
-	public WordCountReducer(NetworkMaster n){
-		reduceNetwork = n;
+	public WordCountReducer(NetworkMaster myNetwork){
+		reduceNetwork = myNetwork;
 	}
 	
 	@Override

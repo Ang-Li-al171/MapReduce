@@ -6,9 +6,9 @@ public class AcceptConnection implements Runnable{
     
     TCPServer myServer;
     
-    public AcceptConnection(int serverPort, NetworkMaster network){
+    public AcceptConnection(int serverPort, NetworkMaster networkMaster){
         myServer = new TCPServer(serverPort);
-        myServer.registerNetwork(network);
+        myServer.registerNetwork(networkMaster);
     }
     
     @Override
