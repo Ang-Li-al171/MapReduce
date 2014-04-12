@@ -1,7 +1,7 @@
 package reduce;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+
 
 import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
@@ -10,26 +10,32 @@ import output.OutputCollector;
 public class WordCountReducer implements Reducer<String, Integer> {
 
 	private NetworkMaster myNetwork;
-	private HashMap<String, Integer> list;
+	private HashMap<String, Integer> countMap;
+	private Map<String, List<Integer>> mapList;
+	private Map<String, Iterator<Integer>> mapIterator;
+	private List<String> list;
 	private HashSet<Integer> reduceEOF;
 	private int jobCounter;
 
     public WordCountReducer (NetworkMaster network) {
         myNetwork = network;
-        list = new HashMap<String, Integer>();
+        list = new ArrayList<>();
+        mapList = new HashMap<>();
+        mapIterator = new HashMap<>();
         reduceEOF = new HashSet<Integer>();
         jobCounter = 0;
     }
 
 	@Override
-	public void reduce() {
-		for (String s: list.keySet()) {
-			KeyValuePair result = new KeyValuePair<String, Integer>(s, list.get(s));
-			myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), result);
-		}
-
-		list = new HashMap<String, Integer>();
-        reduceEOF = new HashSet<Integer>();
+	public void reduce(String key, Iterator<Integer> values) {
+	        int sum = 0;
+	        while (values.hasNext()) {
+	           sum += values.next();
+	        }
+		KeyValuePair result = new KeyValuePair<String, Integer>(key, sum);
+		myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), result);
+//		list = new HashMap<String, Integer>();
+//                reduceEOF = new HashSet<Integer>();
 	}
 	
 	@Override
@@ -37,14 +43,25 @@ public class WordCountReducer implements Reducer<String, Integer> {
 		//jobCounter++;
 		String key = kvp.getKey().toString();
 		int value = (Integer) kvp.getValue();
-		if(!list.containsKey(key)) {
-			list.put(key, value);
-		} else {
-			int old = list.get(key);
-			list.put(key, old + value);
+		if(!mapList.containsKey(key)) {
+		        List<Integer> counts = new ArrayList<>();
+		        counts.add(1);
+		        mapList.put(key, counts);
+		} else {	
+	                List<Integer> counts = mapList.get(key);
+	                counts.add(value);
+	                mapList.put(key, counts);
 		}
 		//jobCounter--;
 		//notifyAll();
+	}
+	
+	public void convertListToIterator() {
+	    for (String word: mapList.keySet()) {
+	        List<Integer> counts = mapList.get(word);
+	        Iterator iterator = counts.iterator();
+	        mapIterator.put(word, iterator);
+	    }
 	}
 	
 	@Override
@@ -71,7 +88,10 @@ public class WordCountReducer implements Reducer<String, Integer> {
 					//e.printStackTrace();
 				}
 			}
-			reduce();
+			convertListToIterator();
+			for (String word: mapIterator.keySet()) {
+			    reduce(word, mapIterator.get(word));
+			}
 			System.out.println("REDUCE END");
 		}
 		
