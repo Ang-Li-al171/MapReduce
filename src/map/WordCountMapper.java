@@ -1,22 +1,16 @@
 package map;
 
-import input.FileReader;
-import input.Splitter;
-import java.io.FileNotFoundException;
-
 import keyvaluepair.KeyValuePair;
-
+import network.NetworkCodes;
 import network.NetworkMaster;
 
 public class WordCountMapper implements Mapper {
 
     private NetworkMaster myNetwork;
-    private boolean mapEOF;
     private int jobCounter;
 
     public WordCountMapper (NetworkMaster network) {
         myNetwork = network;
-        mapEOF = false;
         jobCounter = 0;
     }
 
@@ -27,9 +21,8 @@ public class WordCountMapper implements Mapper {
     		String word = processWord(rawWord);
     		int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
             myNetwork.sendKVPToNode(n, new KeyValuePair<String, Integer>(word, 1));
-            
     	}
-    	System.out.println("Finished a map");
+    	System.out.println("Finished mapping one line");
     }
     
     private String processWord(String rawWord) {
@@ -41,20 +34,19 @@ public class WordCountMapper implements Mapper {
     @Override
     public synchronized void incrementCounter() {
     	jobCounter++;
-    	System.out.println("INCRE: CURRENT JOB COUNTER: " + jobCounter);
+    	System.out.println("Increment: JOB COUNTER: " + jobCounter);
     }
     
     @Override
     public synchronized void decrementCounter() {
     	jobCounter--;
-    	System.out.println("DECRE: CURRENT JOB COUNTER: " + jobCounter);
+    	System.out.println("Decrement: JOB COUNTER: " + jobCounter);
     	notifyAll();
     }
 
     @Override
     public synchronized void receiveEOF() {
-    	mapEOF = true;
-    	System.out.println("MAPEOF received!");
+    	System.out.println("MAP EOF received!");
     	while (jobCounter != 0) {
     		try {
 				wait();
@@ -64,7 +56,8 @@ public class WordCountMapper implements Mapper {
     	}
     	System.out.println("START sending REDUCEEOF");
     	StringBuilder sb = new StringBuilder();
-    	sb.append("4000 ");
+    	sb.append(Integer.toString(NetworkCodes.REDUCEEOF));
+    	sb.append(" ");
     	sb.append(myNetwork.getPort());
     	myNetwork.sendMsgToAll(sb.toString());
 

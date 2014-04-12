@@ -60,11 +60,11 @@ public class TCPServer {
                                                         File.separator + "server" + File.separator +
                                                         "ReceivedFile.txt";
     private static Mapper myCurrentMapper;
-    private static Reducer myCurrentReducer;
+    private static Reducer<String, Integer> myCurrentReducer;
     private Object receivedObj = null;
     private String receivedFile = null;
-    
     private NetworkMaster myNetwork;
+    
     
     public TCPServer(int port){
         PORT = port;
@@ -89,12 +89,12 @@ public class TCPServer {
             }
         }
         catch (Exception e) {
-//            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked"})
     private void dealWithObjectReceived (String inType, Object inObj) {
         if (inType.equals("textfile")) {
             writeReceivedFile(inObj);
@@ -133,15 +133,14 @@ public class TCPServer {
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
-              
                 	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]));
                 }
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
-                	myCurrentMapper.receiveEOF();
+                    myCurrentMapper.receiveEOF();
                 }
                 else {
-                    System.out.println("Received msg: " + s);
+                    System.out.println("Received msg to be mapped: " + s);
                     myCurrentMapper.incrementCounter();
                     myCurrentMapper.map(s);
                     myCurrentMapper.decrementCounter();
@@ -149,17 +148,17 @@ public class TCPServer {
             }
             
             else if (inType.equals("keyvaluepair.KeyValuePair")){
-            	KeyValuePair kvp = (KeyValuePair) inObj;
+                KeyValuePair<String, Integer> kvp = (KeyValuePair<String, Integer>) inObj;
                 if (myNetwork.getIsHost()) {	//receiving end result
-                	System.out.println("RESULT: " + kvp.getKey().toString() + " " + (Integer)kvp.getValue());
+                	System.out.println("RESULT: " + kvp.getKey() + " "
+                	                    + kvp.getValue() + ". Time spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
                 } else {	//receiving reduce work
                     
                     myCurrentReducer.incrementCounter();
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.decrementCounter();
-                    System.out.println("Reduced word " + kvp.getKey().toString() + " received");
+                    System.out.println("Key-value Pair: " + kvp.getKey().toString() + ", received");
                     
-                    //myNetwork.collectKVP(kvp);
                 }
             }
         }

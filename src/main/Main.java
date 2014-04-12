@@ -48,10 +48,12 @@ public class Main
             if (action2.equals("mrWordCount")){
                 System.out.println("Please enter a file name: ");
                 String file = in.next();    
-                System.out.println("Carrying out word count on file " + file);
+                System.out.println("Carrying out map-reduce wordcount on file " + file);
                 
                 myEndSystem.runWordCount(file);
                 break;
+            } else{
+                System.out.println("Invalid command: " + action2);
             }
             
         }
