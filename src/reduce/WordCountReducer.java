@@ -11,12 +11,14 @@ public class WordCountReducer implements Reducer<String, Integer> {
 
 	private NetworkMaster myNetwork;
 	private HashMap<String, Integer> list;
-	private HashSet<Integer> mapEOF;
+	private HashSet<Integer> reduceEOF;
+	private int jobCounter;
 
     public WordCountReducer (NetworkMaster network) {
         myNetwork = network;
         list = new HashMap<String, Integer>();
-        mapEOF = new HashSet<Integer>();
+        reduceEOF = new HashSet<Integer>();
+        jobCounter = 0;
     }
 
 	@Override
@@ -27,11 +29,12 @@ public class WordCountReducer implements Reducer<String, Integer> {
 		}
 
 		list = new HashMap<String, Integer>();
-        mapEOF = new HashSet<Integer>();
+        reduceEOF = new HashSet<Integer>();
 	}
 	
 	@Override
 	public void addKVP(KeyValuePair kvp) {
+		//jobCounter++;
 		String key = kvp.getKey().toString();
 		int value = (Integer) kvp.getValue();
 		if(!list.containsKey(key)) {
@@ -40,13 +43,37 @@ public class WordCountReducer implements Reducer<String, Integer> {
 			int old = list.get(key);
 			list.put(key, old + value);
 		}
+		//jobCounter--;
+		//notifyAll();
 	}
 	
 	@Override
-	public void receiveEOF(int port) {
-		mapEOF.add(port);
-		if (mapEOF.size() == myNetwork.getNodeListSize() - 1){
+	    public synchronized void incrementCounter() {
+	    	jobCounter++;
+	    	System.out.println("INCRE: CURRENT REDUCE COUNTER: " + jobCounter);
+	}
+	
+	@Override
+    public synchronized void decrementCounter() {
+    	jobCounter--;
+    	System.out.println("DECRE: CURRENT REDUCE COUNTER: " + jobCounter);
+    	notifyAll();
+    }
+	
+	@Override
+	public synchronized void receiveEOF(int port) {
+		reduceEOF.add(port);
+		if (reduceEOF.size() == myNetwork.getNodeListSize()){
+			while (jobCounter != 0) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					//e.printStackTrace();
+				}
+			}
 			reduce();
+			System.out.println("REDUCE END");
 		}
+		
 	}
 }

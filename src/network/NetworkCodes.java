@@ -13,5 +13,6 @@ public class NetworkCodes {
     public static final int WORDCOUNT = 3000;
     
     //Network Codes for EOF
-    public static final int MAPEOF = 4000;
+    public static final int REDUCEEOF = 4000;
+    public static final int MAPEOF = 4001;
 }
