@@ -30,8 +30,8 @@ public class EndSystem {
         
         //notify job choice to peers
         myNetwork.sendMsgToAll("3000");
-        System.out.println("Initiating MR job");
-        
+        int numNodes = myNetwork.getNodeListSize();
+        System.out.println("Initiating MR job with " + numNodes + " nodes");
         Splitter s = new Splitter(myNetwork.getNodeListSize(), myNetwork); // Programmer can customize the splitter they use
         FileReader fr = new FileReader(s); // Programmer can also customize the reader they use
         try {
@@ -46,7 +46,7 @@ public class EndSystem {
         //TODO: THIS IS A FALSE TIME COUNT!!
         long endTime = System.currentTimeMillis();
 
-        System.out.printf("Job done! Take taken: %d milliseconds", endTime-startTime);
+        System.out.printf("Job done! Take taken: %d milliseconds\n", endTime-startTime);
     }
 
 	public void joinHost(String ownIP, String ownPort, String ip, String port){

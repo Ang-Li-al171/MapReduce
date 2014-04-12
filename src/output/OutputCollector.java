@@ -10,6 +10,7 @@ here to send tuples to other nodes.
 public class OutputCollector<K, V> {
 
 	private List<KeyValuePair<K, V>> tuples; //Programmer should not be able to access this
+	private Shuffler shuffler;
 
 	public OutputCollector() {
 		tuples = new LinkedList<KeyValuePair<K, V>>();
@@ -22,6 +23,19 @@ public class OutputCollector<K, V> {
 	
 	public synchronized void collect(KeyValuePair<K, V> kvp){
 	    tuples.add(kvp);
+	}
+	
+	public List<KeyValuePair<K, V>> getTuples() {
+	    return tuples;
+	}
+	
+	public void setShuffler(Shuffler s) {
+	    shuffler = s;
+	}
+	
+	public void collectAndSend(KeyValuePair<K, V> kvp) {
+	    tuples.add(kvp);
+	    shuffler.assignToMachine(kvp);
 	}
 
 }

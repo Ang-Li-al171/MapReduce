@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import output.OutputCollector;
+import output.Shuffler;
 
 import reduce.Reducer;
 import reduce.WordCountReducer;
@@ -143,7 +145,12 @@ public class TCPServer {
                 else {
                     System.out.println("Received msg: " + s);
                     myCurrentMapper.incrementCounter();
-                    myCurrentMapper.map(s);
+                    OutputCollector output = new OutputCollector();
+                    Shuffler shuffler = new Shuffler(myNetwork, output);
+                    output.setShuffler(shuffler);
+                    myCurrentMapper.map(s, output);
+                    
+                    shuffler.shuffle();
                     myCurrentMapper.decrementCounter();
                 }
             }
