@@ -11,14 +11,16 @@ public class WordCountReducer implements Reducer<String, Integer> {
     private Map<String, List<Integer>> mapList;
     private Map<String, Iterator<Integer>> mapIterator;
     private HashSet<Integer> reduceEOF;
-    private int jobCounter;
+    private int jobDone;
+    private int totalRevCount;
 
     public WordCountReducer (NetworkMaster network) {
         myNetwork = network;
         mapList = new HashMap<>();
         mapIterator = new HashMap<>();
         reduceEOF = new HashSet<Integer>();
-        jobCounter = 0;
+        jobDone = 0;
+        totalRevCount = 0;
     }
 
     @Override
@@ -56,23 +58,20 @@ public class WordCountReducer implements Reducer<String, Integer> {
     }
 
     @Override
-    public synchronized void incrementCounter () {
-        jobCounter++;
-        System.out.println("INCRE: CURRENT REDUCE COUNTER: " + jobCounter);
-    }
-
-    @Override
-    public synchronized void decrementCounter () {
-        jobCounter--;
-        System.out.println("DECRE: CURRENT REDUCE COUNTER: " + jobCounter);
+    public synchronized void jobDoneCount() {
+        jobDone++;
+        System.out.println("Increment: JOBDONE COUNT: " + jobDone);
         notifyAll();
     }
 
     @Override
-    public synchronized void receiveEOF (int port) {
+    public synchronized void receiveEOF (int port, int count) {
+        
         reduceEOF.add(port);
+        totalRevCount +=count;
+        
         if (reduceEOF.size() == myNetwork.getNodeListSize()) {
-            while (jobCounter != 0) {
+            while (jobDone < totalRevCount) {
                 try {
                     wait();
                 }

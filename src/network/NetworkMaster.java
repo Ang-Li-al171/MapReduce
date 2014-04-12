@@ -133,7 +133,7 @@ public class NetworkMaster {
 
         myClients.get(index).sendObjToServerNonBlock(outType, kvp);
 
-        System.out.println("Sent " + kvp.getKey() + "to reducer machine " + index);
+        System.out.println("Sent " + kvp.getKey() + " to reducer machine " + index);
 
     }
     
@@ -142,7 +142,27 @@ public class NetworkMaster {
     	temp.sendObjectToServer("keyvaluepair.KeyValuePair", kvp);
     }
     
+    public void sendMapEOFToAll(int[] counts){
+        for(int i=0; i<myNodes.size(); i++){
+            String t = Integer.toString(NetworkCodes.MAPEOF) + " " + counts[i];
+            sendMsgToNode(i, t);
+        }
+    }
+    
+    public void sendReduceEOFToAll(int[] counts){
+        
+        for(int i=0; i<myNodes.size(); i++){
 
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(NetworkCodes.REDUCEEOF));
+            sb.append(" ");
+            sb.append(myPort);
+            sb.append(" ");
+            sb.append(Integer.toString(counts[i]));
+            sendMsgToNode(i, sb.toString());
+        }
+    }
+    
     public void collectKVP (KeyValuePair<String, Integer> kvp) {
         myOutput.collect(kvp);
         System.out.println("Collected key "+kvp.getKey()+", value " + kvp.getValue().toString());

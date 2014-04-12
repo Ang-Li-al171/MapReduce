@@ -61,7 +61,6 @@ public class TCPServer {
                                                         "ReceivedFile.txt";
     private static Mapper myCurrentMapper;
     private static Reducer<String, Integer> myCurrentReducer;
-    private Object receivedObj = null;
     private String receivedFile = null;
     private NetworkMaster myNetwork;
     
@@ -108,13 +107,13 @@ public class TCPServer {
                 System.out.println("Client's object type is not found...");
                 return;
             }
-            receivedObj = c.cast(inObj);
+            Object rvdObj = c.cast(inObj);
 //            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
 
             // do whatever you want to do with the objects here
             // register the node into myNetwork if the action code matches
             if (inType.equals("java.lang.String")){
-                String s = (String) receivedObj;
+                String s = (String) rvdObj;
                 
                 if (s.startsWith(Integer.toString(NetworkCodes.JOIN))){ // what if a word starts with this??
                     String[] splits = s.split(" ");
@@ -133,17 +132,17 @@ public class TCPServer {
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
-                	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]));
+                	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]), Integer.parseInt(splits[2]));
                 }
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
-                    myCurrentMapper.receiveEOF();
+                    String[] ss = s.split(" ");
+                    myCurrentMapper.receiveEOF(Integer.parseInt(ss[1]));
                 }
                 else {
                     System.out.println("Received msg to be mapped: " + s);
-                    myCurrentMapper.incrementCounter();
                     myCurrentMapper.map(s);
-                    myCurrentMapper.decrementCounter();
+                    myCurrentMapper.jobDoneCount();
                 }
             }
             
@@ -154,9 +153,8 @@ public class TCPServer {
                 	                    + kvp.getValue() + ". Time spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
                 } else {	//receiving reduce work
                     
-                    myCurrentReducer.incrementCounter();
                     myCurrentReducer.addKVP(kvp);
-                    myCurrentReducer.decrementCounter();
+                    myCurrentReducer.jobDoneCount();
                     System.out.println("Key-value Pair: " + kvp.getKey().toString() + ", received");
                     
                 }
@@ -183,10 +181,6 @@ public class TCPServer {
         }
 
         System.out.println("I received file \"" + DEFAULT_RECEIVED_FILE + "\" from the client!");
-    }
-
-    public Object getMostRecentObject () {
-        return receivedObj;
     }
 
     public String getMostRecentFileName () {

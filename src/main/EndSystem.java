@@ -40,7 +40,7 @@ public class EndSystem {
             e.printStackTrace();
         }
         
-        myNetwork.sendMsgToAll(Integer.toString(NetworkCodes.MAPEOF));
+        myNetwork.sendMapEOFToAll(fr.getCounts());
         
         myNetwork.registerTimer(startTime);
     }

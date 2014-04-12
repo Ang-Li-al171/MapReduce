@@ -10,9 +10,7 @@ public interface Reducer<K, V> {
 
     public void addKVP (KeyValuePair<K, V> kvp);
 
-    public void receiveEOF (int port);
+    public void receiveEOF (int port, int count);
 
-    public void incrementCounter ();
-
-    public void decrementCounter ();
+    public void jobDoneCount ();
 }
