@@ -93,8 +93,8 @@ public class TCPClient implements Runnable{
         while(!end){
             while(objToSend.size() > 0){
                 try {
-                	//System.out.println("Current msg to send " + objToSend.get(0).toString() + "size of list " + objToSend.size());
-                	createSocketAndSend(objType.get(0), objToSend.get(0));
+                    //System.out.println("Current msg to send " + objToSend.get(0).toString() + "size of list " + objToSend.size());
+                    createSocketAndSend(objType.get(0), objToSend.get(0));
                     objToSend.remove(0);
                     objType.remove(0);
                     //System.out.println("Current size: " + objToSend.size());

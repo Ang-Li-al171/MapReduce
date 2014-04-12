@@ -42,29 +42,46 @@ public class Main
         while (true) {
         // only runs once for now, add the loop later
         
-            System.out.println("Please enter the next command: mrWordCount/more commands coming");
-            String action2 = in.next();
+            System.out.println("Please enter the next command: mrWordCount/naiveWordCount");
+            String action2 = in.next().toLowerCase();
 
-            if (action2.equals("mrWordCount")){
+            if (action2.equals("mrwordcount")){
                 System.out.println("Please enter a file name: ");
                 String file = in.next();    
-                System.out.println("Carrying out word count on file " + file);
+                System.out.println("Carrying out map-reduce wordcount on file " + file);
                 
                 myEndSystem.runWordCount(file);
+                
                 break;
+                
+            } else if (action2.equals("naivewordcount")){
+                
+                System.out.println("Please enter a file name: ");
+                String file = in.next();    
+                System.out.println("Carrying out naive wordcount on file " + file);
+                
+                try {
+                    runNaiveWC();
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                
+            } else {
+                System.out.println("Invalid command: " + action2);
             }
             
         }
         in.close();
     }
     
-    public void runNaiveWC() throws FileNotFoundException {
+    public static void runNaiveWC() throws FileNotFoundException {
         NaiveWordCount counter = new NaiveWordCount();
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
         counter.countWords("test.txt");
-        long endTime = System.nanoTime();
+        long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         counter.printWordCount();
-        System.out.println("Naive word count took "+duration+" nanoseconds");    
+        System.out.println("Naive word count took "+duration+" milliseconds");    
     }
 }

@@ -18,6 +18,7 @@ public class NetworkMaster {
     private AcceptConnection myServer;
     private List<TCPClient> myClients;
     private boolean isHost;
+    private long startTime;
 
     public NetworkMaster (OutputCollector<String, Integer> o) {
         myOutput = o;
@@ -32,11 +33,23 @@ public class NetworkMaster {
         new Thread(myServer).start();
     }
 
+    public void registerTimer(long startT){
+        startTime = startT;
+    }
+    
+    public long timeSpent(long currT){
+        return currT-startTime;
+    }
+    
     public void requestJoin (String ownIP, String ownPort, String ip, String port) {
+        
+        myServer = new AcceptConnection(Integer.parseInt(ownPort), this);
+        new Thread(myServer).start();
+        
         myHostIp = ip;
+        myIp = ownIP;
         myPort = Integer.parseInt(ownPort);
         myHostPort = port;
-        myIp = ownIP;
     	TCPClient client = new TCPClient(ip, Integer.parseInt(port), NetworkCodes.TIMEOUT);
 
         String outType = "java.lang.String";
@@ -44,8 +57,6 @@ public class NetworkMaster {
 
         client.sendObjectToServer(outType, outObj);
 
-        myServer = new AcceptConnection(Integer.parseInt(ownPort), this);
-        new Thread(myServer).start();
     }
 
     public List<Node> getNodes () {
@@ -122,7 +133,7 @@ public class NetworkMaster {
 
         myClients.get(index).sendObjToServerNonBlock(outType, kvp);
 
-        System.out.println("Reduce " + kvp.getKey().toString() + "to reducer machine " + index);
+        System.out.println("Sent " + kvp.getKey() + " to reducer machine " + index);
 
     }
     
@@ -131,7 +142,27 @@ public class NetworkMaster {
     	temp.sendObjectToServer("keyvaluepair.KeyValuePair", kvp);
     }
     
+    public void sendMapEOFToAll(int[] counts){
+        for(int i=0; i<myNodes.size(); i++){
+            String t = Integer.toString(NetworkCodes.MAPEOF) + " " + counts[i];
+            sendMsgToNode(i, t);
+        }
+    }
+    
+    public void sendReduceEOFToAll(int[] counts){
+        
+        for(int i=0; i<myNodes.size(); i++){
 
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(NetworkCodes.REDUCEEOF));
+            sb.append(" ");
+            sb.append(myPort);
+            sb.append(" ");
+            sb.append(Integer.toString(counts[i]));
+            sendMsgToNode(i, sb.toString());
+        }
+    }
+    
     public void collectKVP (KeyValuePair<String, Integer> kvp) {
         myOutput.collect(kvp);
         System.out.println("Collected key "+kvp.getKey()+", value " + kvp.getValue().toString());

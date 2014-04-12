@@ -2,12 +2,9 @@ package main;
 
 import input.FileReader;
 import input.Splitter;
-
 import java.io.FileNotFoundException;
-
+import network.NetworkCodes;
 import network.NetworkMaster;
-import map.*;
-import reduce.*;
 import output.*;
 
 /**
@@ -26,14 +23,15 @@ public class EndSystem {
     }
     
     public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc
-        long startTime = System.currentTimeMillis();
         
         //notify job choice to peers
-        myNetwork.sendMsgToAll("3000");
-        int numNodes = myNetwork.getNodeListSize();
-        System.out.println("Initiating MR job with " + numNodes + " nodes");
+        myNetwork.sendMsgToAll(Integer.toString(NetworkCodes.WORDCOUNT));
+        System.out.println("Initiating MR job, timer starts...");
         Splitter s = new Splitter(myNetwork.getNodeListSize(), myNetwork); // Programmer can customize the splitter they use
         FileReader fr = new FileReader(s); // Programmer can also customize the reader they use
+        
+        long startTime = System.currentTimeMillis(); // do we start the timer here?
+        
         try {
             fr.read(file);
         }
@@ -41,15 +39,11 @@ public class EndSystem {
             e.printStackTrace();
         }
         
-        myNetwork.sendMsgToAll("4001");
-        
-        //TODO: THIS IS A FALSE TIME COUNT!!
-        long endTime = System.currentTimeMillis();
-
-        System.out.printf("Job done! Take taken: %d milliseconds\n", endTime-startTime);
+        myNetwork.sendMapEOFToAll(fr.getCounts());     
+        myNetwork.registerTimer(startTime);
     }
 
-	public void joinHost(String ownIP, String ownPort, String ip, String port){
+    public void joinHost(String ownIP, String ownPort, String ip, String port){
         myNetwork.requestJoin(ownIP, ownPort, ip, port);
     }
 

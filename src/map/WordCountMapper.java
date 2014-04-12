@@ -4,21 +4,20 @@ import input.FileReader;
 import input.Splitter;
 import java.io.FileNotFoundException;
 import output.OutputCollector;
-
 import keyvaluepair.KeyValuePair;
-
 import network.NetworkMaster;
+
 
 public class WordCountMapper implements Mapper {
 
     private NetworkMaster myNetwork;
-    private boolean mapEOF;
-    private int jobCounter;
+    private int jobDone;
+    private int[] sentCounts;
 
     public WordCountMapper (NetworkMaster network) {
         myNetwork = network;
-        mapEOF = false;
-        jobCounter = 0;
+        jobDone = 0;
+        sentCounts = new int[network.getNodeListSize()];
     }
 
     @Override
@@ -30,42 +29,38 @@ public class WordCountMapper implements Mapper {
     	}
     	System.out.println("Finished a map");
     }
-    
-    private String processWord(String rawWord) {
-    	String s = rawWord.replaceAll("[()?:\"!.,;]+", "");
 
-    	return s.toLowerCase();
-    }
-    
-    @Override
-    public synchronized void incrementCounter() {
-    	jobCounter++;
-    	System.out.println("INCRE: CURRENT JOB COUNTER: " + jobCounter);
-    }
-    
-    @Override
-    public synchronized void decrementCounter() {
-    	jobCounter--;
-    	System.out.println("DECRE: CURRENT JOB COUNTER: " + jobCounter);
-    	notifyAll();
+    private String processWord (String rawWord) {
+        String s = rawWord.replaceAll("[()?:\"!.,;]+", "");
+        return s.toLowerCase();
     }
 
     @Override
-    public synchronized void receiveEOF() {
-    	mapEOF = true;
-    	System.out.println("MAPEOF received!");
-    	while (jobCounter != 0) {
-    		try {
-				wait();
-			} catch (InterruptedException e) {
-				//e.printStackTrace();
-			}
-    	}
-    	System.out.println("START sending REDUCEEOF");
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("4000 ");
-    	sb.append(myNetwork.getPort());
-    	myNetwork.sendMsgToAll(sb.toString());
+    public synchronized void jobDoneCount () {
+        jobDone++;
+        System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
+        notifyAll();
+    }
 
+    @Override
+    public synchronized void receiveEOF (int count) {
+        System.out.println("MAP EOF received!");
+        while (jobDone < count) {
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+                // e.printStackTrace();
+            }
+        }
+        System.out.println("START sending REDUCEEOF");
+        myNetwork.sendReduceEOFToAll(sentCounts);
+
+    }
+    
+    public void incrementSentCounts(int n) {
+        synchronized(this){
+            sentCounts[n]++;
+        }
     }
 }

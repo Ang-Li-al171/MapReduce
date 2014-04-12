@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
 public class FileReader {
     
     private static final Pattern PUNCTUATION = Pattern.compile("[(){},.;!?<>%]\"");
-    private static Splitter splitter;
-    private static Scanner s;
-    private static final String root = "src/files/";
+    private Splitter splitter;
+    private Scanner s;
+    private final String root = "src/files/";
     
     public FileReader(Splitter s) {
         splitter = s;
@@ -37,6 +37,9 @@ public class FileReader {
         }         
     }
     
+    public int[] getCounts(){
+        return splitter.getMapCounts();
+    }
     private static String removePunctiation(String x) {
         return PUNCTUATION.matcher(x).replaceAll("");
     }
