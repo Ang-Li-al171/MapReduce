@@ -37,4 +37,21 @@ public class FileReader {
         }      
         return results;
     }
+    
+    public List<String> readAndSplitByWord(String file) throws FileNotFoundException {    
+        file = root+file;
+        File fileName = new File(file);
+        try {
+            s = new Scanner(fileName);
+            while (s.hasNext()) {
+                String word = s.next();
+                results.add(word);
+            }
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }      
+        return results;
+    }
 }

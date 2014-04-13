@@ -10,13 +10,13 @@ import java.util.*;
  * @author weideng
  *
  */
-public class Main
-{
-    public static void main (String[] args)
-    {      
+public class Main {
+	private static Scanner in = new Scanner(System.in);
+	private static String[] validTasksArray = {"mrwordcount", "mrterasort"};
+	private static Set<String> validTasks = new HashSet<String>(Arrays.asList(validTasksArray));
+	
+    public static void main (String[] args) {      
         EndSystem myEndSystem = new EndSystem();
-
-        Scanner in = new Scanner(System.in);
 
         System.out.println("Please enter command 'host' or 'join': ");
 
@@ -40,28 +40,13 @@ public class Main
         }
 
         while (true) {
-        // only runs once for now, add the loop later
-        
             System.out.println("Please enter the next command: mrWordCount/naiveWordCount");
             String action2 = in.next().toLowerCase();
-
-            if (action2.equals("mrwordcount")){
-                System.out.println("Please enter a file name: ");
-                String file = in.next();    
-                System.out.println("Carrying out map-reduce wordcount on file " + file);
-                
-                myEndSystem.runTask("wordcount", file);
-                
-                break;
-                
-            } else if (action2.equals("mrterasort")){
+            
+            if (validTasks.contains(action2)) {
             	System.out.println("Please enter a file name: ");
-                String file = in.next();    
-                
-                System.out.println("Carrying out map-reduce terasort on file " + file);
-                myEndSystem.runTeraSort(file);
-            	
-            	
+                String file = in.next();
+                myEndSystem.runTask(action2, file);
             } else if (action2.equals("naivewordcount")){
                 
                 System.out.println("Please enter a file name: ");
@@ -80,7 +65,6 @@ public class Main
             }
             
         }
-        in.close();
     }
     
     public static void runNaiveWC() throws FileNotFoundException {

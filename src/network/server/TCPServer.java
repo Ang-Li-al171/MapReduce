@@ -10,8 +10,10 @@ import java.util.List;
 import output.Distributor;
 
 import reduce.Reducer;
+import reduce.TeraSortReducer;
 import reduce.WordCountReducer;
 import map.Mapper;
+import map.TeraSortMapper;
 import map.WordCountMapper;
 import network.NetworkCodes;
 import network.NetworkMaster;
@@ -105,8 +107,6 @@ public class TCPServer {
             Object rvdObj = c.cast(inObj);
 //            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
 
-            // do whatever you want to do with the objects here
-            // register the node into myNetwork if the action code matches
             if (inType.equals("java.lang.String")){
                 String s = (String) rvdObj;
                 
@@ -123,6 +123,10 @@ public class TCPServer {
                 else if (s.startsWith(Integer.toString(NetworkCodes.WORDCOUNT))) {
                 	myCurrentMapper = new WordCountMapper(myNetwork);
                 	myCurrentReducer = new WordCountReducer(myNetwork);
+                } 
+                else if (s.startsWith(Integer.toString(NetworkCodes.TERASORT))) {
+                	myCurrentMapper = new TeraSortMapper(myNetwork);
+                	myCurrentReducer = new TeraSortReducer(myNetwork);
                 }
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {

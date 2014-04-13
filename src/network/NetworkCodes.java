@@ -11,6 +11,7 @@ public class NetworkCodes {
     
     //Network Codes for Job Identifier
     public static final int WORDCOUNT = 3000;
+    public static final int TERASORT = 3001;
     
     //Network Codes for EOF
     public static final int REDUCEEOF = 4000;

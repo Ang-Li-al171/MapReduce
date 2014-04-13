@@ -17,12 +17,13 @@ public class WordCountPreProcessor implements PreProcessor{
 	public WordCountPreProcessor(NetworkMaster network) {
 		myNetwork = network;
 		counter = 0;
-		jobCounts = new int[network.getNodeListSize()];
 	}
 
 	@Override
 	public void preProcess(String file) {
-		FileReader fr = new FileReader(); // Programmer can also customize the reader they use
+		jobCounts = new int[myNetwork.getNodeListSize()];
+		
+		FileReader fr = new FileReader();
         try {
             lines = fr.readAndSplitByLine(file);
         }
@@ -30,6 +31,7 @@ public class WordCountPreProcessor implements PreProcessor{
             e.printStackTrace();
         }
         
+        //TODO: put it here now for simplicity. Can later put back to Splitter (need to be more flexible).
         for (String line: lines) {
         	System.out.printf("Sending line: %s to machine: %d in the node list\n", line, counter);
             jobCounts[counter]++;

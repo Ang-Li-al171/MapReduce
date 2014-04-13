@@ -3,10 +3,17 @@ package main;
 import input.FileReader;
 import input.Splitter;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import network.NetworkCodes;
 import network.NetworkMaster;
 import output.*;
 import preprocess.PreProcessor;
+import preprocess.TeraSortPreProcessor;
 import preprocess.WordCountPreProcessor;
 
 /**
@@ -18,32 +25,24 @@ public class EndSystem {
 
     private Distributor<String, Integer> myOutput;
     private PreProcessor myPreProcessor;
-    private NetworkMaster myNetwork;
-
-    public EndSystem(){       
-        myNetwork = new NetworkMaster();
-    }
+    private NetworkMaster myNetwork = new NetworkMaster();
+    private String[] myTasks = {"mrwordcount", "mrterasort"};
+    private PreProcessor[] myTaskProcessors = {new WordCountPreProcessor(myNetwork),
+    											new TeraSortPreProcessor(myNetwork)};
+    private Integer[] myTaskCodes = {NetworkCodes.WORDCOUNT, NetworkCodes.TERASORT};
     
-    //TODO: more refactoring can go here
     public void runTask(String type, String file) {
     	long startTime = System.currentTimeMillis();
-    	if (type.equals("wordcount")) {
-    		//notify job choice to peers
-            myNetwork.sendMsgToAll(Integer.toString(NetworkCodes.WORDCOUNT));
-            System.out.println("Initiating MR job, timer starts...");
-            
-            myPreProcessor = new WordCountPreProcessor(myNetwork);
-            myPreProcessor.preProcess(file);
-            
-            myNetwork.registerTimer(startTime);
-        }
-    }
-    
-    public void runTeraSort(String file) {
-    	//Pick Samples
-   		//Sort Samples
-    	//Find splits
-  		//Pass <line, splits> to Mappers
+    	
+    	List<String> myTasksList = Arrays.asList(myTasks);
+    	myNetwork.sendMsgToAll(Integer.toString(myTaskCodes[myTasksList.indexOf(type)]));
+        System.out.println("Initiating MR job, timer starts...");
+        
+        myPreProcessor = myTaskProcessors[myTasksList.indexOf(type)];
+        myPreProcessor.preProcess(file);
+        
+        myNetwork.registerTimer(startTime);
+
     }
 
     public void joinHost(String ownIP, String ownPort, String ip, String port){
