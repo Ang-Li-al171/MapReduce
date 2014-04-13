@@ -12,7 +12,6 @@ import output.Shuffler;
 
 import reduce.Reducer;
 import reduce.WordCountReducer;
-
 import map.Mapper;
 import map.WordCountMapper;
 import network.NetworkCodes;
@@ -39,11 +38,6 @@ public class TCPServer {
                 Object inObj = in.readObject();
                 dealWithObjectReceived(inType, inObj);
                 in.close();
-                
-//                ObjectOutputStream out = new ObjectOutputStream(myClientSocket.getOutputStream());
-//                out.writeObject("Hi Client, this is server. Your information has been received");
-//                out.flush();
-//                out.close();
 
                 myClientSocket.close();
                 
@@ -143,10 +137,9 @@ public class TCPServer {
                 }
                 else {
                     System.out.println("Received msg to be mapped: " + s);
-                    OutputCollector output = new OutputCollector();
-                    Shuffler shuffler = new Shuffler(myNetwork, output);
+                    Shuffler shuffler = new Shuffler(myNetwork);
                     shuffler.setMapper(myCurrentMapper);
-                    output.setShuffler(shuffler);
+                    OutputCollector output = new OutputCollector(shuffler, "map");
                     myCurrentMapper.map(s, output);
                     myCurrentMapper.jobDoneCount();
                 }

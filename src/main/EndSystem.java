@@ -17,9 +17,8 @@ public class EndSystem {
     private OutputCollector<String, Integer> myOutput;
     private NetworkMaster myNetwork;
 
-    public EndSystem(){
-        myOutput = new OutputCollector<String, Integer>();
-        myNetwork = new NetworkMaster(myOutput);
+    public EndSystem(){       
+        myNetwork = new NetworkMaster();
     }
     
     public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc

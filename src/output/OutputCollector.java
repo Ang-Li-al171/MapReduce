@@ -11,14 +11,20 @@ public class OutputCollector<K, V> {
 
 	private List<KeyValuePair<K, V>> tuples; //Programmer should not be able to access this
 	private Shuffler shuffler;
+	private String phase;
 
-	public OutputCollector() {
+	public OutputCollector(Shuffler s, String p) {
 		tuples = new LinkedList<KeyValuePair<K, V>>();
+		shuffler = s;
+		phase = p;
 	}
 
 	public void collect(K key, V value) {
-		KeyValuePair<K, V> t = new KeyValuePair<K, V>(key, value);
-		tuples.add(t);
+		KeyValuePair<K, V> kvp = new KeyValuePair<K, V>(key, value);
+		tuples.add(kvp);
+		if (phase.equals("map")) { collectAndShuffle(kvp); }
+		else if (phase.equals("reduce")) { collectAndSend(kvp); }
+		else { System.out.println("Error, unknown phase"); }
 	}
 	
 	public synchronized void collect(KeyValuePair<K, V> kvp){
@@ -33,9 +39,20 @@ public class OutputCollector<K, V> {
 	    shuffler = s;
 	}
 	
-	public void collectAndSend(KeyValuePair<K, V> kvp) {
-	    tuples.add(kvp);
+	/**
+	 * Called after map, shuffles k,v pairs to new nodes
+	 * @param kvp
+	 */
+	public void collectAndShuffle(KeyValuePair<K, V> kvp) {
 	    shuffler.assignToMachine(kvp);
+	}
+	
+	/**
+	 * Called after reduce, sends all k,v pairs to host
+	 * @param kvp
+	 */
+	public void collectAndSend(KeyValuePair<K, V> kvp) {
+	    shuffler.assignToHost(kvp);
 	}
 
 }

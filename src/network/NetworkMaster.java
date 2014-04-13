@@ -26,6 +26,12 @@ public class NetworkMaster {
         myClients = new LinkedList<TCPClient>();
         isHost = false;
     }
+    
+    public NetworkMaster () {
+        myNodes = new LinkedList<Node>();
+        myClients = new LinkedList<TCPClient>();
+        isHost = false;
+    }
 
     public void startListening (int port) {
         isHost = true;
@@ -163,10 +169,10 @@ public class NetworkMaster {
         }
     }
     
-    public void collectKVP (KeyValuePair<String, Integer> kvp) {
-        myOutput.collect(kvp);
-        System.out.println("Collected key "+kvp.getKey()+", value " + kvp.getValue().toString());
-    }
+//    public void collectKVP (KeyValuePair<String, Integer> kvp) {
+//        myOutput.collect(kvp);
+//        System.out.println("Collected key "+kvp.getKey()+", value " + kvp.getValue().toString());
+//    }
 
     private void initNewClient (Node n) {
         TCPClient client = new TCPClient(n.getIp(), n.getPort(), NetworkCodes.TIMEOUT);

@@ -8,7 +8,7 @@ import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
 
 
-public class WordCountMapper implements Mapper {
+public class WordCountMapper implements Mapper<String, Integer> {
 
     private NetworkMaster myNetwork;
     private int jobDone;
@@ -21,11 +21,11 @@ public class WordCountMapper implements Mapper {
     }
 
     @Override
-    public void map (String s, OutputCollector o) {
+    public void map (String s, OutputCollector<String, Integer> o) {
     	String[] wordList = s.split(" ");
     	for (String rawWord: wordList) {
     	    String word = processWord(rawWord);
-    	    o.collectAndSend(new KeyValuePair<String, Integer>(word, 1));       
+    	    o.collect(word, 1);       
     	}
     	System.out.println("Finished a map");
     }
