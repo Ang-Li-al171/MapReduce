@@ -33,7 +33,11 @@ public class NetworkMaster {
     }
 
     public void requestJoin (String ownIP, String ownPort, String ip, String port) {
-        myHostIp = ip;
+
+        myServer = new AcceptConnection(Integer.parseInt(ownPort), this);
+        new Thread(myServer).start();
+    	
+    	myHostIp = ip;
         myPort = Integer.parseInt(ownPort);
         myHostPort = port;
         myIp = ownIP;
@@ -44,8 +48,6 @@ public class NetworkMaster {
 
         client.sendObjectToServer(outType, outObj);
 
-        myServer = new AcceptConnection(Integer.parseInt(ownPort), this);
-        new Thread(myServer).start();
     }
 
     public List<Node> getNodes () {
