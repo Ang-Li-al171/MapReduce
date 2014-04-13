@@ -1,79 +1,90 @@
 package reduce;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
+import java.util.*;
+import output.OutputCollector;
+import output.Shuffler;
 import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
-import output.OutputCollector;
+
 
 public class WordCountReducer implements Reducer<String, Integer> {
 
-	private NetworkMaster myNetwork;
-	private HashMap<String, Integer> list;
-	private HashSet<Integer> reduceEOF;
-	private int jobCounter;
+    private NetworkMaster myNetwork;
+    private Map<String, List<Integer>> mapList;
+    private Map<String, Iterator<Integer>> mapIterator;
+    private HashSet<Integer> reduceEOF;
+    private int jobDone;
+    private int totalRevCount;
 
     public WordCountReducer (NetworkMaster network) {
         myNetwork = network;
-        list = new HashMap<String, Integer>();
+        mapList = new HashMap<String, List<Integer>>();
+        mapIterator = new HashMap<String, Iterator<Integer>>();
         reduceEOF = new HashSet<Integer>();
-        jobCounter = 0;
+        jobDone = 0;
+        totalRevCount = 0;
     }
 
-	@Override
-	public void reduce() {
-		for (String s: list.keySet()) {
-			KeyValuePair result = new KeyValuePair<String, Integer>(s, list.get(s));
-			myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), result);
-		}
+    @Override
+    public void reduce (String key, Iterator<Integer> values, OutputCollector<String,Integer> o) {
+        int sum = 0;
+        while (values.hasNext()) {
+            sum += values.next();
+        }
+        o.collect(key, sum);
+    }
 
-		list = new HashMap<String, Integer>();
-        reduceEOF = new HashSet<Integer>();
-	}
-	
-	@Override
-	public void addKVP(KeyValuePair kvp) {
-		//jobCounter++;
-		String key = kvp.getKey().toString();
-		int value = (Integer) kvp.getValue();
-		if(!list.containsKey(key)) {
-			list.put(key, value);
-		} else {
-			int old = list.get(key);
-			list.put(key, old + value);
-		}
-		//jobCounter--;
-		//notifyAll();
-	}
-	
-	@Override
-	    public synchronized void incrementCounter() {
-	    	jobCounter++;
-	    	System.out.println("INCRE: CURRENT REDUCE COUNTER: " + jobCounter);
-	}
-	
-	@Override
-    public synchronized void decrementCounter() {
-    	jobCounter--;
-    	System.out.println("DECRE: CURRENT REDUCE COUNTER: " + jobCounter);
-    	notifyAll();
+    @Override
+    public synchronized void addKVP (KeyValuePair<String, Integer> kvp) {
+        String key = kvp.getKey();
+        int value = kvp.getValue();
+        if (!mapList.containsKey(key)) {
+            List<Integer> counts = new ArrayList<Integer>();
+            counts.add(value);
+            mapList.put(key, counts);
+        }
+        else {
+            mapList.get(key).add(value);
+        }
+    }
+
+    public void convertListToIterator () {
+        for (String word : mapList.keySet()) {
+            List<Integer> counts = mapList.get(word);
+            Iterator<Integer> iterator = counts.iterator();
+            mapIterator.put(word, iterator);
+        }
     }
 	
-	@Override
-	public synchronized void receiveEOF(int port) {
-		reduceEOF.add(port);
-		if (reduceEOF.size() == myNetwork.getNodeListSize()){
-			while (jobCounter != 0) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					//e.printStackTrace();
-				}
-			}
-			reduce();
-			System.out.println("REDUCE END");
-		}
-		
-	}
+    @Override
+    public synchronized void jobDoneCount() {
+        jobDone++;
+        System.out.println("Increment: JOBDONE COUNT: " + jobDone);
+        notifyAll();
+    }
+
+    @Override
+    public synchronized void receiveEOF (int port, int count) {
+        
+        reduceEOF.add(port);
+        totalRevCount +=count;
+        
+        if (reduceEOF.size() == myNetwork.getNodeListSize()) {
+            while (jobDone < totalRevCount) {
+                try {
+                    wait();
+                }
+                catch (InterruptedException e) {
+                     e.printStackTrace();
+                }
+            }
+            convertListToIterator();
+            Shuffler shuffler = new Shuffler(myNetwork);
+            OutputCollector output = new OutputCollector(shuffler, "reduce");
+            for (String word : mapIterator.keySet()) {
+                reduce(word, mapIterator.get(word), output);
+            }
+            System.out.println("REDUCE DONE");
+        }
+    }
 }
