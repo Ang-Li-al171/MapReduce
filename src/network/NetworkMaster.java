@@ -4,13 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import keyvaluepair.KeyValuePair;
 import network.client.TCPClient;
-import output.OutputCollector;
+import output.Distributor;
 
 
-public class NetworkMaster {
+public class NetworkMaster<K, V> {
 
     private List<Node> myNodes;
-    private OutputCollector<String, Integer> myOutput;
+    private Distributor<String, Integer> myOutput;
     private int myPort;
     private String myIp;
     private String myHostPort;
@@ -20,7 +20,7 @@ public class NetworkMaster {
     private boolean isHost;
     private long startTime;
 
-    public NetworkMaster (OutputCollector<String, Integer> o) {
+    public NetworkMaster (Distributor<String, Integer> o) {
         myOutput = o;
         myNodes = new LinkedList<Node>();
         myClients = new LinkedList<TCPClient>();
@@ -133,7 +133,7 @@ public class NetworkMaster {
     	}
     }
 
-    public void sendKVPToNode (int index, KeyValuePair<String, Integer> kvp) {
+    public void sendKVPToNode (int index, KeyValuePair<K, V> kvp) {
 
         String outType = "keyvaluepair.KeyValuePair";
 
@@ -143,7 +143,7 @@ public class NetworkMaster {
 
     }
     
-    public void sendKVPToPortAndIP (String IP, String port, KeyValuePair<String, Integer> kvp) {
+    public void sendKVPToPortAndIP (String IP, String port, KeyValuePair<K,V> kvp) {
     	TCPClient temp = new TCPClient(IP, Integer.parseInt(port), NetworkCodes.TIMEOUT);
     	temp.sendObjectToServer("keyvaluepair.KeyValuePair", kvp);
     }

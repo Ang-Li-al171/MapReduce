@@ -27,7 +27,6 @@ public class Splitter {
     }
     
     protected void assignToNode(String line) {
-        //Protocol: <Map/Reduce Indicator> <Map/Reduce Function> <msg>
         System.out.printf("Sending line: %s to machine: %d in the node list\n", line, counter);
         counts[counter]++;
         myNetwork.sendMsgToNode(counter, line);

@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
-import output.OutputCollector;
+import output.Distributor;
 import output.Shuffler;
 
 import reduce.Reducer;
@@ -137,9 +137,10 @@ public class TCPServer {
                 }
                 else {
                     System.out.println("Received msg to be mapped: " + s);
-                    Shuffler shuffler = new Shuffler(myNetwork);
-                    shuffler.setMapper(myCurrentMapper);
-                    OutputCollector output = new OutputCollector(shuffler, "map");
+                    //Shuffler shuffler = new Shuffler(myNetwork);
+                    //shuffler.setMapper(myCurrentMapper);
+                    Distributor output = new Distributor(myNetwork);
+                   	output.setMapper(myCurrentMapper);
                     myCurrentMapper.map(s, output);
                     myCurrentMapper.jobDoneCount();
                 }

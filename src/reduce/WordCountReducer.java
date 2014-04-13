@@ -1,7 +1,7 @@
 package reduce;
 
 import java.util.*;
-import output.OutputCollector;
+import output.Distributor;
 import output.Shuffler;
 import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
@@ -26,12 +26,12 @@ public class WordCountReducer implements Reducer<String, Integer> {
     }
 
     @Override
-    public void reduce (String key, Iterator<Integer> values, OutputCollector<String,Integer> o) {
+    public void reduce (String key, Iterator<Integer> values, Distributor<String,Integer> o) {
         int sum = 0;
         while (values.hasNext()) {
             sum += values.next();
         }
-        o.collect(key, sum);
+        o.collectAndSendToHost(key, sum);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class WordCountReducer implements Reducer<String, Integer> {
                 }
             }
             convertListToIterator();
-            Shuffler shuffler = new Shuffler(myNetwork);
-            OutputCollector output = new OutputCollector(shuffler, "reduce");
+            //Shuffler shuffler = new Shuffler(myNetwork);
+            Distributor output = new Distributor(myNetwork);
             for (String word : mapIterator.keySet()) {
                 reduce(word, mapIterator.get(word), output);
             }

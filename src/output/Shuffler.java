@@ -39,10 +39,4 @@ public class Shuffler<K,V> {
         myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), KVP);
     }
     
-    public void setMapper(Mapper m) { //Assigns a mapper to this shuffler
-        mapper = m;      
-    }
-    
-
-
 }

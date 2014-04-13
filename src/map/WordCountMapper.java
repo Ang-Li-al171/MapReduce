@@ -3,7 +3,7 @@ package map;
 import input.FileReader;
 import input.Splitter;
 import java.io.FileNotFoundException;
-import output.OutputCollector;
+import output.Distributor;
 import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
 
@@ -21,11 +21,11 @@ public class WordCountMapper implements Mapper<String, Integer> {
     }
 
     @Override
-    public void map (String s, OutputCollector<String, Integer> o) {
+    public void map (String s, Distributor<String, Integer> o) {
     	String[] wordList = s.split(" ");
     	for (String rawWord: wordList) {
     	    String word = processWord(rawWord);
-    	    o.collect(word, 1);       
+    	    o.collectAndShuffle(word, 1);       
     	}
     	System.out.println("Finished a map");
     }

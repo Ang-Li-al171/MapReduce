@@ -14,7 +14,7 @@ This is where the programmer creates the specifics for a job and runs it.
 
 public class EndSystem {
 
-    private OutputCollector<String, Integer> myOutput;
+    private Distributor<String, Integer> myOutput;
     private NetworkMaster myNetwork;
 
     public EndSystem(){       
