@@ -2,7 +2,6 @@ package reduce;
 
 import java.util.*;
 import output.Distributor;
-import output.Shuffler;
 import keyvaluepair.KeyValuePair;
 import network.NetworkMaster;
 

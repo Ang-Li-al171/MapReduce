@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import output.Distributor;
-import output.Shuffler;
 
 import reduce.Reducer;
 import reduce.WordCountReducer;

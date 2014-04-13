@@ -50,10 +50,18 @@ public class Main
                 String file = in.next();    
                 System.out.println("Carrying out map-reduce wordcount on file " + file);
                 
-                myEndSystem.runWordCount(file);
+                myEndSystem.runTask("wordcount", file);
                 
                 break;
                 
+            } else if (action2.equals("mrterasort")){
+            	System.out.println("Please enter a file name: ");
+                String file = in.next();    
+                
+                System.out.println("Carrying out map-reduce terasort on file " + file);
+                myEndSystem.runTeraSort(file);
+            	
+            	
             } else if (action2.equals("naivewordcount")){
                 
                 System.out.println("Please enter a file name: ");

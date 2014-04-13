@@ -25,7 +25,8 @@ public class WordCountMapper implements Mapper<String, Integer> {
     	String[] wordList = s.split(" ");
     	for (String rawWord: wordList) {
     	    String word = processWord(rawWord);
-    	    o.collectAndShuffle(word, 1);       
+    	    o.collectAndShuffle(word, 1);  
+    	    
     	}
     	System.out.println("Finished a map");
     }

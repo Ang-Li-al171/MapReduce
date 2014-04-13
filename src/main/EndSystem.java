@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import network.NetworkCodes;
 import network.NetworkMaster;
 import output.*;
+import preprocess.PreProcessor;
+import preprocess.WordCountPreProcessor;
 
 /**
 The main user program, and the only file the programmer sees.
@@ -15,31 +17,33 @@ This is where the programmer creates the specifics for a job and runs it.
 public class EndSystem {
 
     private Distributor<String, Integer> myOutput;
+    private PreProcessor myPreProcessor;
     private NetworkMaster myNetwork;
 
     public EndSystem(){       
         myNetwork = new NetworkMaster();
     }
     
-    public void runWordCount(String file) { //Specify the job configurations, mapper, reducer, etc
-        
-        //notify job choice to peers
-        myNetwork.sendMsgToAll(Integer.toString(NetworkCodes.WORDCOUNT));
-        System.out.println("Initiating MR job, timer starts...");
-        Splitter s = new Splitter(myNetwork.getNodeListSize(), myNetwork); // Programmer can customize the splitter they use
-        FileReader fr = new FileReader(s); // Programmer can also customize the reader they use
-        
-        long startTime = System.currentTimeMillis(); // do we start the timer here?
-        
-        try {
-            fr.read(file);
+    //TODO: more refactoring can go here
+    public void runTask(String type, String file) {
+    	long startTime = System.currentTimeMillis();
+    	if (type.equals("wordcount")) {
+    		//notify job choice to peers
+            myNetwork.sendMsgToAll(Integer.toString(NetworkCodes.WORDCOUNT));
+            System.out.println("Initiating MR job, timer starts...");
+            
+            myPreProcessor = new WordCountPreProcessor(myNetwork);
+            myPreProcessor.preProcess(file);
+            
+            myNetwork.registerTimer(startTime);
         }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        
-        myNetwork.sendMapEOFToAll(fr.getCounts());     
-        myNetwork.registerTimer(startTime);
+    }
+    
+    public void runTeraSort(String file) {
+    	//Pick Samples
+   		//Sort Samples
+    	//Find splits
+  		//Pass <line, splits> to Mappers
     }
 
     public void joinHost(String ownIP, String ownPort, String ip, String port){

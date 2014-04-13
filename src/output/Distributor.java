@@ -5,9 +5,11 @@ import map.Mapper;
 import network.NetworkMaster;
 
 import keyvaluepair.KeyValuePair;
-/**
-Receives KVPs from mappers/reducers, and pass the results to the
-corresponding machines determined by mappers/reducers.
+/***
+ * Receives KVPs from mappers/reducers, and pass the results to the
+ * corresponding machines determined by mappers/reducers.
+ * @author weideng
+ * @modified Wenshun Liu
 */
 public class Distributor<K, V> {
 
@@ -24,7 +26,6 @@ public class Distributor<K, V> {
 	 */
 	public void collectAndShuffle(K key, V value) {
 		KeyValuePair<K, V> kvp = new KeyValuePair<K, V>(key, value);
-	    //shuffler.assignToMachine(kvp);
 		
 		String word = kvp.getKey().toString();
         int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
@@ -38,7 +39,6 @@ public class Distributor<K, V> {
 	 */
 	public void collectAndSendToHost(K key, V value) {
 		KeyValuePair<K, V> kvp = new KeyValuePair<K, V>(key, value);
-		//shuffler.assignToHost(kvp);
 		
 		myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), kvp);
 	}
