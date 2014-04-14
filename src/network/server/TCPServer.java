@@ -156,11 +156,9 @@ public class TCPServer {
                 	System.out.println("RESULT: " + kvp.getKey() + " "
                 	                    + kvp.getValue() + ". Time spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
                 } else {	//receiving reduce work
-                    
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.jobDoneCount();
-                    System.out.println("Key-value Pair: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());
-                    
+                    System.out.println("Reducing KVP: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());   
                 }
             }
         }
