@@ -17,6 +17,7 @@ public class TeraSortReducer implements Reducer<String, Integer>{
 	private List<String> words;
     private int jobDone;
     private int totalRevCount;
+    private int myIndex;
 	
 	 public TeraSortReducer (NetworkMaster network) {
 	        myNetwork = network;
@@ -29,6 +30,7 @@ public class TeraSortReducer implements Reducer<String, Integer>{
 	@Override
 	public synchronized void addKVP(KeyValuePair<String, Integer> kvp) {
 		words.add(kvp.getKey());
+		myIndex = kvp.getValue();
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class TeraSortReducer implements Reducer<String, Integer>{
 			sb.append(wordsArray[i]);
 			sb.append(" ");
 		}
-		output.collectAndSendToHost(sb.toString(), myNetwork.getPort());
+		output.collectAndSendToHost(sb.toString(), myIndex);
 	}
 
 }

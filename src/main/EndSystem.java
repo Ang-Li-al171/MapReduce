@@ -12,6 +12,9 @@ import java.util.Map;
 import network.NetworkCodes;
 import network.NetworkMaster;
 import output.*;
+import postprocess.PostProcess;
+import postprocess.TeraSortPostProcess;
+import postprocess.WordCountPostProcess;
 import preprocess.PreProcessor;
 import preprocess.TeraSortPreProcessor;
 import preprocess.WordCountPreProcessor;
@@ -29,6 +32,8 @@ public class EndSystem {
     private String[] myTasks = {"mrwordcount", "mrterasort"};
     private PreProcessor[] myTaskProcessors = {new WordCountPreProcessor(myNetwork),
     											new TeraSortPreProcessor(myNetwork)};
+    private PostProcess[] myPostProcessors = {new WordCountPostProcess(myNetwork),
+			new TeraSortPostProcess(myNetwork)};
     private Integer[] myTaskCodes = {NetworkCodes.WORDCOUNT, NetworkCodes.TERASORT};
     
     public void runTask(String type, String file) {
@@ -40,6 +45,8 @@ public class EndSystem {
         
         myPreProcessor = myTaskProcessors[myTasksList.indexOf(type)];
         myPreProcessor.preProcess(file);
+        
+        myNetwork.setPostProcessor(myPostProcessors[myTasksList.indexOf(type)]);
         
         myNetwork.registerTimer(startTime);
 

@@ -8,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import output.Distributor;
+import postprocess.PostProcess;
+import postprocess.WordCountPostProcess;
 
 import reduce.Reducer;
 import reduce.TeraSortReducer;
@@ -123,10 +125,13 @@ public class TCPServer {
                 else if (s.startsWith(Integer.toString(NetworkCodes.WORDCOUNT))) {
                 	myCurrentMapper = new WordCountMapper(myNetwork);
                 	myCurrentReducer = new WordCountReducer(myNetwork);
+//                	myCurrentPostProcessor = new WordCountPostProcess(myNetwork);
+//                	if (myCurrentPostProcessor == null) System.out.println("POST PROCESSOR STILL NULL!");
                 } 
                 else if (s.startsWith(Integer.toString(NetworkCodes.TERASORT))) {
                 	myCurrentMapper = new TeraSortMapper(myNetwork);
                 	myCurrentReducer = new TeraSortReducer(myNetwork);
+//                	myCurrentPostProcessor = new WordCountPostProcess(myNetwork);
                 } 
                 else if (s.startsWith(Integer.toString(NetworkCodes.TERASORTSPLITER))) {
                 	((TeraSortMapper) myCurrentMapper).receiveSpliter(s);
@@ -153,8 +158,7 @@ public class TCPServer {
             else if (inType.equals("keyvaluepair.KeyValuePair")){
                 KeyValuePair<String, Integer> kvp = (KeyValuePair<String, Integer>) inObj;
                 if (myNetwork.getIsHost()) {	//receiving end result
-                	System.out.println("RESULT: " + kvp.getKey() + " "
-                	                    + kvp.getValue() + ". Time spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
+                	myNetwork.postProcess(kvp);
                 } else {	//receiving reduce work
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.jobDoneCount();

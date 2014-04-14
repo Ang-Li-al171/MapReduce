@@ -68,7 +68,7 @@ public class TeraSortMapper implements Mapper<String, Integer>{
 			index++;
 			if (index == mySpliters.length-1) break;
 		}
-		o.collectAndSendToIndex(index, word, 0);
+		o.collectAndSendToIndex(index, word, index);
 	}
 
 	@Override
