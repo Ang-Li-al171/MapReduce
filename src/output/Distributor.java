@@ -42,6 +42,16 @@ public class Distributor<K, V> {
 		
 		myNetwork.sendKVPToPortAndIP(myNetwork.getHostIP(), myNetwork.getHostPort(), kvp);
 	}
+
+	/**
+	 * Sends KVP to machine of given index
+	 * @param kvp
+	 */
+	public void collectAndSendToIndex(int index, K key, V value) {
+		KeyValuePair<K, V> kvp = new KeyValuePair<K, V>(key, value);
+		
+		myNetwork.sendKVPToNode(index, kvp);
+	}
 	
     public void setMapper(Mapper m) {
         mapper = m;      

@@ -127,8 +127,11 @@ public class TCPServer {
                 else if (s.startsWith(Integer.toString(NetworkCodes.TERASORT))) {
                 	myCurrentMapper = new TeraSortMapper(myNetwork);
                 	myCurrentReducer = new TeraSortReducer(myNetwork);
+                } 
+                else if (s.startsWith(Integer.toString(NetworkCodes.TERASORTSPLITER))) {
+                	((TeraSortMapper) myCurrentMapper).receiveSpliter(s);
                 }
-                
+
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
                 	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]), Integer.parseInt(splits[2]));
@@ -138,10 +141,8 @@ public class TCPServer {
                     String[] ss = s.split(" ");
                     myCurrentMapper.receiveEOF(Integer.parseInt(ss[1]));
                 }
-                else {
+                else {	//receive map work
                     System.out.println("Received msg to be mapped: " + s);
-                    //Shuffler shuffler = new Shuffler(myNetwork);
-                    //shuffler.setMapper(myCurrentMapper);
                     Distributor output = new Distributor(myNetwork);
                    	output.setMapper(myCurrentMapper);
                     myCurrentMapper.map(s, output);
