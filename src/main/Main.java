@@ -47,7 +47,7 @@ public class Main {
             }
         }    
 
-        while (true) {
+        while (true && myEndSystem.isHost()) {
             System.out.println("Programs available:");
             System.out.println("mrWordCount (requires peers)");
             System.out.println("naiveWordCount");

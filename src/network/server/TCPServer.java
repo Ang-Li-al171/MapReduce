@@ -87,7 +87,7 @@ public class TCPServer {
             }
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -103,7 +103,7 @@ public class TCPServer {
                 c = Class.forName(inType);
             }
             catch (ClassNotFoundException e) {
-                System.out.println("Client's object type is not found...");
+                //System.out.println("Client's object type is not found...");
                 return;
             }
             Object rvdObj = c.cast(inObj);
@@ -147,7 +147,7 @@ public class TCPServer {
                     myCurrentMapper.receiveEOF(Integer.parseInt(ss[1]));
                 }
                 else {	//receive map work
-                    System.out.println("Received msg to be mapped: " + s);
+                    //System.out.println("Received msg to be mapped: " + s);
                     Distributor output = new Distributor(myNetwork);
                    	output.setMapper(myCurrentMapper);
                     myCurrentMapper.map(s, output);
@@ -162,7 +162,7 @@ public class TCPServer {
                 } else {	//receiving reduce work
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.jobDoneCount();
-                    System.out.println("Reducing KVP: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());   
+                    //System.out.println("Reducing KVP: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());   
                 }
             }
         }
@@ -182,11 +182,11 @@ public class TCPServer {
             receivedFile = DEFAULT_RECEIVED_FILE;
         }
         catch (Exception e) {
-            System.out.println("Error reading client's file input or writing it to a file...");
+            //System.out.println("Error reading client's file input or writing it to a file...");
             return;
         }
 
-        System.out.println("I received file \"" + DEFAULT_RECEIVED_FILE + "\" from the client!");
+        //System.out.println("I received file \"" + DEFAULT_RECEIVED_FILE + "\" from the client!");
     }
 
     public String getMostRecentFileName () {
