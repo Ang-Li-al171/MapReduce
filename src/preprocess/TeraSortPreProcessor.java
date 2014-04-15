@@ -54,12 +54,12 @@ public class TeraSortPreProcessor implements PreProcessor{
         //Pass <line, splits> to Mappers
         for (String word: words) {
         	//System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
+            String modified = word.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+            if (modified.length() < 1) continue;
+            myNetwork.sendMsgToNode(counter, modified);
             jobCounts[counter]++;
-            myNetwork.sendMsgToNode(counter, word);
             counter++;
             if (counter == myNetwork.getNodeListSize()) counter = 0;
-        	
-        	
         	
 //        	int index = findPosition(word, splits);
 //        	System.out.printf("Sending word: %s to machine: %d in the node list\n", word, index);

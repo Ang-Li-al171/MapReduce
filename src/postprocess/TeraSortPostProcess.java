@@ -1,7 +1,7 @@
 package postprocess;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
-
 import network.NetworkMaster;
 import keyvaluepair.KeyValuePair;
 
@@ -10,13 +10,20 @@ public class TeraSortPostProcess implements PostProcess{
 	private NetworkMaster myNetwork;
 	private HashMap<Integer, String> results = new HashMap<Integer, String>();
 	private int jobDone;
-    private int totalRevCount;
+        private int totalRevCount;
+        private PrintWriter output;
 	
 	
 	public TeraSortPostProcess(NetworkMaster network) {
 		myNetwork = network;
 		jobDone = 0;
-        totalRevCount = 0;
+		totalRevCount = 0;
+		try {
+                output = new PrintWriter("src/files/teraSortOutput.txt", "UTF-8");
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
 	}
 
 	@Override
@@ -33,7 +40,8 @@ public class TeraSortPostProcess implements PostProcess{
 		for (int i = 0; i< myNetwork.getNodeListSize(); i++) {
 			if (results.containsKey(i)){
 				String[] temp = results.get(i).split(" ");
-				for (String s: temp) System.out.println("RESULT: " + s);
+				for (String s: temp)
+				    output.println("RESULT: " + s + " Time Spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
 			}
 		}
 	}
