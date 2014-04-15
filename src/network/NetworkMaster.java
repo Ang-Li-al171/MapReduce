@@ -105,7 +105,7 @@ public class NetworkMaster<K, V> {
         }
         myClients.clear();
         
-        System.out.println("Cleared Node List...");
+        //System.out.println("Cleared Node List...");
         for (String onePeer : peers) {
             String[] ss = onePeer.split(":");
             register(ss[0], ss[1]);
@@ -141,7 +141,7 @@ public class NetworkMaster<K, V> {
 
         myClients.get(index).sendObjToServerNonBlock(outType, kvp);
 
-        System.out.println("Sent " + kvp.getKey() + " to reducer machine " + index);
+        //System.out.println("Sent " + kvp.getKey() + " to reducer machine " + index);
 
     }
     
@@ -209,5 +209,9 @@ public class NetworkMaster<K, V> {
     
     public String getIP() {
     	return myIp;
+    }
+    
+    public boolean isHost() {
+        return isHost;
     }
 }

@@ -63,4 +63,9 @@ public class EndSystem {
     public boolean hasPeers() {
         return myNetwork.getNodeListSize() > 0;
     }
+    
+    public boolean isHost() {
+        return myNetwork.isHost();
+    }
+    
 }
