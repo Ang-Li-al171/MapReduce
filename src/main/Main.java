@@ -30,26 +30,41 @@ public class Main {
                 break;
             }
             else if (action.startsWith("join")) {
-                myEndSystem.joinHost(in.next(), in.next(), in.next(), in.next());
+                System.out.println("Enter your ip:");
+                String ownIp = in.next();
+                System.out.println("Enter your port:");
+                String ownPort = in.next();
+                System.out.println("Enter host ip:");
+                String hostIp = in.next();
+                System.out.println("Enter host port:");
+                String hostPort = in.next();      
+                myEndSystem.joinHost(ownIp, ownPort, hostIp, hostPort);
                 System.out.println("JOIN request sent to network host!");
                 break;
             }
             else {
                 System.out.println("Unrecognized action... Error!");
             }
-        }
+        }    
 
         while (true) {
-            System.out.println("Please enter the next command: mrWordCount/naiveWordCount");
+            System.out.println("Programs available:");
+            System.out.println("mrWordCount (requires peers)");
+            System.out.println("naiveWordCount");
+            System.out.println("TeraSort (requires peers)");
+            System.out.println("Which program would you like to run?");
             String action2 = in.next().toLowerCase();
             
-            if (validTasks.contains(action2)) {
-            	System.out.println("Please enter a file name: ");
+            if (validTasks.contains(action2)) {     
+                if (!myEndSystem.hasPeers()) {
+                    System.out.println("You need peer nodes to run this program!");
+                    continue;
+                }
+            	System.out.println("Please enter an input file name: ");
                 String file = in.next();
                 myEndSystem.runTask(action2, file);
-            } else if (action2.equals("naivewordcount")){
-                
-                System.out.println("Please enter a file name: ");
+            } else if (action2.equals("naivewordcount")){  
+                System.out.println("Please enter an input file name: ");
                 String file = in.next();    
                 System.out.println("Carrying out naive wordcount on file " + file);
                 

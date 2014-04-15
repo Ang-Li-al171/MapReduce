@@ -52,4 +52,8 @@ public class EndSystem {
     public void hostNetwork(String port){
         myNetwork.startListening(Integer.parseInt(port));
     }
+    
+    public boolean hasPeers() {
+        return myNetwork.getNodeListSize() > 0;
+    }
 }
