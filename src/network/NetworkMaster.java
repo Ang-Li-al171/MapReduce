@@ -5,6 +5,7 @@ import java.util.List;
 import keyvaluepair.KeyValuePair;
 import network.client.TCPClient;
 import output.Distributor;
+import postprocess.PostProcess;
 
 
 public class NetworkMaster<K, V> {
@@ -19,6 +20,7 @@ public class NetworkMaster<K, V> {
     private List<TCPClient> myClients;
     private boolean isHost;
     private long startTime;
+    private static PostProcess myCurrentPostProcessor;
 
     public NetworkMaster (Distributor<String, Integer> o) {
         myOutput = o;
@@ -178,6 +180,15 @@ public class NetworkMaster<K, V> {
         TCPClient client = new TCPClient(n.getIp(), n.getPort(), NetworkCodes.TIMEOUT);
         new Thread(client).start();
         myClients.add(client);
+    }
+    
+    
+    public void setPostProcessor(PostProcess p) {
+    	myCurrentPostProcessor = p;
+    }
+    
+    public void postProcess(KeyValuePair kvp){
+    	myCurrentPostProcessor.receiveKVP(kvp);
     }
     
     public int getPort() {

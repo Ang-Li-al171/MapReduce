@@ -24,7 +24,6 @@ public class WordCountReducer implements Reducer<String, Integer> {
         totalRevCount = 0;
     }
 
-    @Override
     public void reduce (String key, Iterator<Integer> values, Distributor<String,Integer> o) {
         int sum = 0;
         while (values.hasNext()) {

@@ -8,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import output.Distributor;
+import postprocess.PostProcess;
+import postprocess.WordCountPostProcess;
 
 import reduce.Reducer;
 import reduce.TeraSortReducer;
@@ -123,12 +125,18 @@ public class TCPServer {
                 else if (s.startsWith(Integer.toString(NetworkCodes.WORDCOUNT))) {
                 	myCurrentMapper = new WordCountMapper(myNetwork);
                 	myCurrentReducer = new WordCountReducer(myNetwork);
+//                	myCurrentPostProcessor = new WordCountPostProcess(myNetwork);
+//                	if (myCurrentPostProcessor == null) System.out.println("POST PROCESSOR STILL NULL!");
                 } 
                 else if (s.startsWith(Integer.toString(NetworkCodes.TERASORT))) {
                 	myCurrentMapper = new TeraSortMapper(myNetwork);
                 	myCurrentReducer = new TeraSortReducer(myNetwork);
+//                	myCurrentPostProcessor = new WordCountPostProcess(myNetwork);
+                } 
+                else if (s.startsWith(Integer.toString(NetworkCodes.TERASORTSPLITER))) {
+                	((TeraSortMapper) myCurrentMapper).receiveSpliter(s);
                 }
-                
+
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
                 	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]), Integer.parseInt(splits[2]));
@@ -138,10 +146,8 @@ public class TCPServer {
                     String[] ss = s.split(" ");
                     myCurrentMapper.receiveEOF(Integer.parseInt(ss[1]));
                 }
-                else {
+                else {	//receive map work
                     System.out.println("Received msg to be mapped: " + s);
-                    //Shuffler shuffler = new Shuffler(myNetwork);
-                    //shuffler.setMapper(myCurrentMapper);
                     Distributor output = new Distributor(myNetwork);
                    	output.setMapper(myCurrentMapper);
                     myCurrentMapper.map(s, output);
@@ -152,14 +158,11 @@ public class TCPServer {
             else if (inType.equals("keyvaluepair.KeyValuePair")){
                 KeyValuePair<String, Integer> kvp = (KeyValuePair<String, Integer>) inObj;
                 if (myNetwork.getIsHost()) {	//receiving end result
-                	System.out.println("RESULT: " + kvp.getKey() + " "
-                	                    + kvp.getValue() + ". Time spent: " + myNetwork.timeSpent(System.currentTimeMillis()));
+                	myNetwork.postProcess(kvp);
                 } else {	//receiving reduce work
-                    
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.jobDoneCount();
-                    System.out.println("Key-value Pair: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());
-                    
+                    System.out.println("Reducing KVP: " + kvp.getKey().toString() + "," +kvp.getValue().intValue());   
                 }
             }
         }
