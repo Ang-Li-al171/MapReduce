@@ -69,7 +69,7 @@ public class Main {
                 System.out.println("Carrying out naive wordcount on file " + file);
                 
                 try {
-                    runNaiveWC();
+                    runNaiveWC(file);
                 }
                 catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -82,10 +82,10 @@ public class Main {
         }
     }
     
-    public static void runNaiveWC() throws FileNotFoundException {
+    public static void runNaiveWC(String file) throws FileNotFoundException {
         NaiveWordCount counter = new NaiveWordCount();
         long startTime = System.currentTimeMillis();
-        counter.countWords("test.txt");
+        counter.countWords(file);
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         counter.printWordCount();

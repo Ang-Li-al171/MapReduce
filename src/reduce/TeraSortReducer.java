@@ -55,7 +55,7 @@ public class TeraSortReducer implements Reducer<String, Integer>{
 	@Override
 	public synchronized void jobDoneCount() {
 		jobDone++;
-        System.out.println("Increment: JOBDONE COUNT: " + jobDone);
+        //System.out.println("Increment: JOBDONE COUNT: " + jobDone);
         notifyAll();
 		
 	}

@@ -53,7 +53,7 @@ public class TeraSortPreProcessor implements PreProcessor{
   		
         //Pass <line, splits> to Mappers
         for (String word: words) {
-        	System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
+        	//System.out.printf("Sending word: %s to machine: %d in the node list\n", word, counter);
             jobCounts[counter]++;
             myNetwork.sendMsgToNode(counter, word);
             counter++;

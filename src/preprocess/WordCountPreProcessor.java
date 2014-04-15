@@ -33,7 +33,7 @@ public class WordCountPreProcessor implements PreProcessor{
         
         //TODO: put it here now for simplicity. Can later put back to Splitter (need to be more flexible).
         for (String line: lines) {
-        	System.out.printf("Sending line: %s to machine: %d in the node list\n", line, counter);
+        	//System.out.printf("Sending line: %s to machine: %d in the node list\n", line, counter);
             jobCounts[counter]++;
             myNetwork.sendMsgToNode(counter, line);
             counter++;
