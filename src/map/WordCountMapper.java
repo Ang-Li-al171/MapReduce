@@ -45,7 +45,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
 
     @Override
     public synchronized void receiveEOF (int count) {
-        System.out.println("MAP EOF received!");
+        //System.out.println("MAP EOF received!");
         while (jobDone < count) {
             try {
                 wait();
@@ -54,7 +54,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
                 // e.printStackTrace();
             }
         }
-        System.out.println("START sending REDUCEEOF");
+        //System.out.println("START sending REDUCEEOF");
         myNetwork.sendReduceEOFToAll(sentCounts);
 
     }
