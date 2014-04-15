@@ -1,7 +1,5 @@
 package reduce;
 
-import java.util.Iterator;
-import output.Distributor;
 import keyvaluepair.KeyValuePair;
 
 

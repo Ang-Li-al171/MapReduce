@@ -20,6 +20,8 @@ public class TCPClient implements Runnable{
     private List<Object> objToSend;
     private List<String> objType;
     private boolean end;
+    private boolean connected;
+    private ObjectOutputStream out;
 
     public TCPClient (String hostIp, int portNum, int timeOut) {
         HOSTIP = hostIp;
@@ -28,6 +30,7 @@ public class TCPClient implements Runnable{
         objToSend = new LinkedList<Object>();
         objType = new LinkedList<String>();
         end = false;
+        connected = false;
     }
 
     public void sendObjectToServer(String outType, Object outObj){
@@ -68,23 +71,27 @@ public class TCPClient implements Runnable{
     private void createSocketAndSend (String outType, Object outObj) throws IOException,
                                                                     ClassNotFoundException {
 
-        s = new Socket();
-        s.connect(new InetSocketAddress(HOSTIP, PORT), TIMEOUT);
-
-        ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+        if (!connected){
+            connected = true;
+            s = new Socket();
+            s.connect(new InetSocketAddress(HOSTIP, PORT), TIMEOUT);
+            out = new ObjectOutputStream(s.getOutputStream());
+        }
         out.writeObject(outType);
         out.writeObject(outObj);
-        out.flush();
+//        out.flush();
 
 //        ObjectInputStream in = new ObjectInputStream(s.getInputStream());
 //        String message = (String) in.readObject();
 //        System.out.println(message);
-
-        s.close();
+//
+//        s.close();
     }
 
-    public synchronized void quitClientThread(){
+    public synchronized void quitClientThread() throws IOException{
         end = true;
+        connected = false;
+        if (s != null) s.close();
         notifyAll();
     }
     
@@ -101,7 +108,7 @@ public class TCPClient implements Runnable{
                 }
                 catch (Exception e) {
                     System.out.println("Something went wrong trying to send the object..." + HOSTIP + PORT);
-                    e.printStackTrace();
+                    return;
                 }
             }
             while (objToSend.size() == 0) {

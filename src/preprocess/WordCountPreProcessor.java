@@ -21,15 +21,16 @@ public class WordCountPreProcessor implements PreProcessor{
 
 	@Override
 	public void preProcess(String file) {
-		jobCounts = new int[myNetwork.getNodeListSize()];
+	
+	    jobCounts = new int[myNetwork.getNodeListSize()];
 		
-		FileReader fr = new FileReader();
-        try {
-            lines = fr.readAndSplitByLine(file);
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    	    FileReader fr = new FileReader();
+            try {
+                lines = fr.readAndSplitByLine(file);
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         
         //TODO: put it here now for simplicity. Can later put back to Splitter (need to be more flexible).
         for (String line: lines) {

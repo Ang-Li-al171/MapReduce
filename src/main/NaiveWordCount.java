@@ -1,6 +1,5 @@
 package main;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.io.*;
 
 public class NaiveWordCount {
@@ -8,7 +7,7 @@ public class NaiveWordCount {
     private HashMap<String, Integer> map;
     private static Scanner s;
     private static final String root = "src/files/";
-    private static final Pattern PUNCTUATION = Pattern.compile("[\"(){},.;!?<>%]");
+//    private static final Pattern PUNCTUATION = Pattern.compile(); 
     
     public NaiveWordCount() {
         map = new HashMap<String, Integer>();
@@ -21,7 +20,8 @@ public class NaiveWordCount {
             s = new Scanner(fileName);
             while (s.hasNext()) {
                 String rawWord = s.next();
-                String word = removePunctiation(rawWord);
+                String word = rawWord.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+                
                 if (map.containsKey(word)) {
                     int count = map.get(word);
                     count++;
@@ -38,9 +38,9 @@ public class NaiveWordCount {
         }    
     }
     
-    private static String removePunctiation(String x) {
-        return PUNCTUATION.matcher(x).replaceAll("");
-    }
+//    private static String removePunctiation(String x) {
+//        return PUNCTUATION.matcher(x).replaceAll("");
+//    }
     
     public void printWordCount() {
         for (String word: map.keySet()) {

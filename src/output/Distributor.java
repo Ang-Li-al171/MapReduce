@@ -28,9 +28,9 @@ public class Distributor<K, V> {
 		KeyValuePair<K, V> kvp = new KeyValuePair<K, V>(key, value);
 		
 		String word = kvp.getKey().toString();
-        int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
-        mapper.incrementSentCounts(n);
-        myNetwork.sendKVPToNode(n, kvp);
+                int n = Math.abs(word.trim().hashCode() % myNetwork.getNodeListSize());
+                mapper.incrementSentCounts(n);
+                myNetwork.sendKVPToNode(n, kvp);
 	}
 	
 	/**

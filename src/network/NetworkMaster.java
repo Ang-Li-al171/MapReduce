@@ -1,5 +1,6 @@
 package network;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import keyvaluepair.KeyValuePair;
@@ -16,6 +17,7 @@ public class NetworkMaster<K, V> {
     private String myIp;
     private String myHostPort;
     private String myHostIp;
+    private TCPClient hostTCPClient;
     private AcceptConnection myServer;
     private List<TCPClient> myClients;
     private boolean isHost;
@@ -58,12 +60,12 @@ public class NetworkMaster<K, V> {
         myIp = ownIP;
         myPort = Integer.parseInt(ownPort);
         myHostPort = port;
-    	TCPClient client = new TCPClient(ip, Integer.parseInt(port), NetworkCodes.TIMEOUT);
+        hostTCPClient = new TCPClient(myHostIp, Integer.parseInt(myHostPort), NetworkCodes.TIMEOUT);
 
         String outType = "java.lang.String";
         String outObj = Integer.toString(NetworkCodes.JOIN) + " " + ownIP + " " + ownPort;
 
-        client.sendObjectToServer(outType, outObj);
+        hostTCPClient.sendObjectToServer(outType, outObj);
 
     }
 
@@ -101,7 +103,12 @@ public class NetworkMaster<K, V> {
         myNodes.clear();
         
         for(TCPClient c : myClients){
-            c.quitClientThread();
+            try {
+                c.quitClientThread();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         myClients.clear();
         
@@ -146,8 +153,7 @@ public class NetworkMaster<K, V> {
     }
     
     public void sendKVPToPortAndIP (String IP, String port, KeyValuePair<K,V> kvp) {
-    	TCPClient temp = new TCPClient(IP, Integer.parseInt(port), NetworkCodes.TIMEOUT);
-    	temp.sendObjectToServer("keyvaluepair.KeyValuePair", kvp);
+    	hostTCPClient.sendObjectToServer("keyvaluepair.KeyValuePair", kvp);
     }
     
     public void sendMapEOFToAll(int[] counts){

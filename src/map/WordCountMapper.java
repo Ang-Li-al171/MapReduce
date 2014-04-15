@@ -30,9 +30,9 @@ public class WordCountMapper implements Mapper<String, Integer> {
     	}
     	//System.out.println("Finished a map");
     }
-
+    
     private String processWord (String rawWord) {
-        String s = rawWord.replaceAll("[()?:\"!.,;]+", "");
+        String s = rawWord.replaceAll("[^a-zA-Z ]", "");
         return s.toLowerCase();
     }
 
@@ -45,23 +45,21 @@ public class WordCountMapper implements Mapper<String, Integer> {
 
     @Override
     public synchronized void receiveEOF (int count) {
-        //System.out.println("MAP EOF received!");
+        System.out.println("MAP EOF received!");
         while (jobDone < count) {
             try {
                 wait();
             }
             catch (InterruptedException e) {
-                // e.printStackTrace();
+                 e.printStackTrace();
             }
         }
-        //System.out.println("START sending REDUCEEOF");
+        System.out.println("START sending REDUCEEOF");
         myNetwork.sendReduceEOFToAll(sentCounts);
 
     }
     
-    public void incrementSentCounts(int n) {
-        synchronized(this){
+    public synchronized void incrementSentCounts(int n) {
             sentCounts[n]++;
-        }
     }
 }

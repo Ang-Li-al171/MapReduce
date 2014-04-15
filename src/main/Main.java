@@ -49,9 +49,9 @@ public class Main {
 
         while (true && myEndSystem.isHost()) {
             System.out.println("Programs available:");
-            System.out.println("mrWordCount (requires peers)");
-            System.out.println("naiveWordCount");
-            System.out.println("TeraSort (requires peers)");
+            System.out.println("\tmrWordCount (requires peers)");
+            System.out.println("\tnaiveWordCount");
+            System.out.println("\tmrTeraSort (requires peers)");
             System.out.println("Which program would you like to run?");
             String action2 = in.next().toLowerCase();
             

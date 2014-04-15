@@ -3,14 +3,12 @@ package network.server;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import output.Distributor;
-import postprocess.PostProcess;
-import postprocess.WordCountPostProcess;
-
 import reduce.Reducer;
 import reduce.TeraSortReducer;
 import reduce.WordCountReducer;
@@ -27,25 +25,40 @@ public class TCPServer {
     private class DealWithConnection implements Runnable{
 
         Socket myClientSocket;
+        ObjectInputStream in;
         
         public DealWithConnection(Socket clientSocket){
             myClientSocket = clientSocket;
+            try {
+                in = new ObjectInputStream(myClientSocket.getInputStream());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         
         @Override
         public void run () {
             
-            try{
-                ObjectInputStream in = new ObjectInputStream(myClientSocket.getInputStream());
-                String inType = (String) in.readObject();
-                Object inObj = in.readObject();
-                dealWithObjectReceived(inType, inObj);
-                in.close();
+            boolean eof = false;
+            while(!eof){
+                try{
+                    
+                    String inType = (String) in.readObject();
+                    Object inObj = in.readObject();
+                    eof = dealWithObjectReceived(inType, inObj);
+    
+                    
+                } catch (Exception e){
+                    e.printStackTrace();
+                    return;
+                }
+            }
 
+            try {
                 myClientSocket.close();
-                
-            } catch (Exception e){
-//                System.out.println(e.getMessage());
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -93,7 +106,7 @@ public class TCPServer {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked"})
-    private void dealWithObjectReceived (String inType, Object inObj) {
+    private boolean dealWithObjectReceived (String inType, Object inObj) {
         if (inType.equals("textfile")) {
             writeReceivedFile(inObj);
         }
@@ -104,7 +117,7 @@ public class TCPServer {
             }
             catch (ClassNotFoundException e) {
                 //System.out.println("Client's object type is not found...");
-                return;
+                return true;
             }
             Object rvdObj = c.cast(inObj);
 //            System.out.println("I received object \"" + c.cast(inObj) + "\" from the client!");
@@ -140,11 +153,13 @@ public class TCPServer {
                 else if (s.startsWith(Integer.toString(NetworkCodes.REDUCEEOF))) {
                 	String[] splits = s.split(" ");
                 	myCurrentReducer.receiveEOF(Integer.parseInt(splits[1]), Integer.parseInt(splits[2]));
+                	return true;
                 }
                 
                 else if (s.startsWith(Integer.toString(NetworkCodes.MAPEOF))) {
                     String[] ss = s.split(" ");
                     myCurrentMapper.receiveEOF(Integer.parseInt(ss[1]));
+                    return true;
                 }
                 else {	//receive map work
                     //System.out.println("Received msg to be mapped: " + s);
@@ -158,7 +173,7 @@ public class TCPServer {
             else if (inType.equals("keyvaluepair.KeyValuePair")){
                 KeyValuePair<String, Integer> kvp = (KeyValuePair<String, Integer>) inObj;
                 if (myNetwork.getIsHost()) {	//receiving end result
-                	myNetwork.postProcess(kvp);
+                    myNetwork.postProcess(kvp);
                 } else {	//receiving reduce work
                     myCurrentReducer.addKVP(kvp);
                     myCurrentReducer.jobDoneCount();
@@ -166,6 +181,7 @@ public class TCPServer {
                 }
             }
         }
+        return false;
     }
 
     @SuppressWarnings("unchecked")
