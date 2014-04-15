@@ -28,7 +28,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
     	    o.collectAndShuffle(word, 1);  
     	    
     	}
-    	System.out.println("Finished a map");
+    	//System.out.println("Finished a map");
     }
 
     private String processWord (String rawWord) {
@@ -39,13 +39,13 @@ public class WordCountMapper implements Mapper<String, Integer> {
     @Override
     public synchronized void jobDoneCount () {
         jobDone++;
-        System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
+        //System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
         notifyAll();
     }
 
     @Override
     public synchronized void receiveEOF (int count) {
-        System.out.println("MAP EOF received!");
+        //System.out.println("MAP EOF received!");
         while (jobDone < count) {
             try {
                 wait();
@@ -54,7 +54,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
                 // e.printStackTrace();
             }
         }
-        System.out.println("START sending REDUCEEOF");
+        //System.out.println("START sending REDUCEEOF");
         myNetwork.sendReduceEOFToAll(sentCounts);
 
     }
