@@ -28,7 +28,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
     	    o.collectAndShuffle(word, 1);  
     	    
     	}
-    	System.out.println("Finished a map");
+    	//System.out.println("Finished a map");
     }
 
     private String processWord (String rawWord) {
@@ -39,7 +39,7 @@ public class WordCountMapper implements Mapper<String, Integer> {
     @Override
     public synchronized void jobDoneCount () {
         jobDone++;
-        System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
+        //System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
         notifyAll();
     }
 

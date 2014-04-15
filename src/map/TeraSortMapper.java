@@ -89,7 +89,7 @@ public class TeraSortMapper implements Mapper<String, Integer>{
 	@Override
 	public synchronized void jobDoneCount() {
 		jobDone++;
-        System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
+        //System.out.println("Increment: JOBDONE COUNTER: " + jobDone);
         notifyAll();
 	}
 
